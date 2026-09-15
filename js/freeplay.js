@@ -13,7 +13,7 @@ export function createFreeplay(screen) {
             const j = Math.floor(Math.random() * (i + 1));
             [colors[i], colors[j]] = [colors[j], colors[i]];
         }
-        
+
         // Rotate an unchanged shuffle so the user always sees a change.
         if (colors.every((color, i) => color === previous[i])) colors.push(colors.shift());
         keys.forEach((key, i) => key.style.setProperty('--key-color', colors[i]));
