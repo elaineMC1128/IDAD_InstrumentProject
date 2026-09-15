@@ -1,13 +1,154 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Music Playground</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/tone"></script>
+    <script type="module" src="js/main.js" defer></script>
 </head>
-<body>
 
+
+<body>
+<main class="app">
+    <!-- Global navigation -->
+    <nav class="navigation">
+        <button id="nav-back" class="icon-button" hidden>
+            <img src="assets/icon/back.png" alt="back"/>
+        </button>
+        <div class="nav-right">
+            <button id="information" class="icon-button" hidden>
+                <img src="assets/icon/information.png" alt="help"/>
+            </button>
+            <button id="volume" class="icon-button">
+                <img src="assets/icon/volume-on.png" alt="volume"/>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Welcome screen -->
+    <section id="welcome" class="screen welcome">
+        <h1>Project Title</h1>
+        <button class="start-button" data-screen="home">
+            <span></span>
+        </button>
+    </section>
+
+    <!-- Mode selection -->
+    <section id="home" class="screen home" hidden>
+        <div class="mode-options">
+            <button class="mode-button" data-screen="freeplay">
+                <img src="assets/icon/play-mode-icon.png" alt="free play mode"/>
+            </button>
+            <button class="mode-button" data-screen="choose">
+                <img src="assets/icon/learning-mode-icon.png" alt="learning mode"/>
+            </button>
+        </div>
+    </section>
+
+    <!-- Song library -->
+    <section id="choose" class="screen choose" hidden>
+        <img class="choice-icon" src="assets/icon/choice.png" alt="song-options"/>
+        <div id="song-options" class="song-options"></div>
+    </section>
+
+    <!-- Free play -->
+    <section id="freeplay" class="screen performance" hidden>
+        <div class="instrument">
+            <svg class="instrument-body" viewBox="0 0 1080 780" preserveAspectRatio="none">
+                <path
+                        d="M0 300C0 130 145 0 330 0C490 0 495 125 735 125H855Q1080 110 1080 290V710Q1080 780 1010 780H70Q0 780 0 710Z"
+                />
+            </svg>
+            <div class="instrument-controls">
+                <button id="change-colors" class="control-tab" title="Shuffle key colors">
+                    <img class="change-icon" src="assets/icon/change.png" alt="random"/>
+                    <img class="palette-icon" src="assets/icon/color-palette.png" alt="color palette"/>
+                </button>
+                <div class="voice-options">
+                    <button data-voice="piano" class="is-selected">
+                        <svg
+                                class="voice-shape"
+                                viewBox="0 0 180 140"
+                                preserveAspectRatio="none"
+                        >
+                            <path
+                                    d="M12 134 Q4 134 8 122 L36 44 Q48 8 83 7 Q123 3 161 10 Q178 14 172 34 L145 117 Q141 134 125 134 Z"
+                            />
+                        </svg>
+                        <img src="assets/icon/piano.png" alt="piano"/>
+                    </button>
+                    <button data-voice="xylophone">
+                        <svg
+                                class="voice-shape"
+                                viewBox="0 0 180 140"
+                                preserveAspectRatio="none"
+                        >
+                            <path
+                                    d="M8 134 L42 10 Q89 19 132 65 Q160 91 173 113 Q185 134 162 134 Z"
+                            />
+                        </svg>
+                        <img src="assets/icon/xylophone.png" alt="xylophone"/>
+                    </button>
+                </div>
+            </div>
+            <div id="free-canvas" class="music-canvas"></div>
+            <div class="keyboard"></div>
+        </div>
+    </section>
+
+    <!-- Learning performance -->
+    <section id="learning" class="screen performance" hidden>
+        <div class="instrument">
+            <svg
+                    class="instrument-body"
+                    viewBox="0 0 1080 780"
+                    preserveAspectRatio="none"
+            >
+                <path
+                        d="M0 300C0 130 145 0 330 0C490 0 495 125 735 125H855Q1080 110 1080 290V710Q1080 780 1010 780H70Q0 780 0 710Z"
+                />
+            </svg>
+            <div class="instrument-controls">
+                <button
+                        id="song-library"
+                        class="control-tab"
+                        data-screen="choose"
+                        title="Choose a song"
+                >
+                    <img src="assets/icon/songs.png" alt="Choose a song"/>
+                </button>
+            </div>
+            <div class="song-stand">
+                <img id="selected-icon" src="assets/icon/star.png" alt="Twinkle Twinkle"/>
+                <span id="selected-title">Twinkle Twinkle</span>
+            </div>
+            <div class="music-canvas learning-canvas">
+                <div id="note-guide" class="note-guide"></div>
+                <button id="demo" class="demo-button">♫</button>
+                <p id="learning-status">Play the highlighted key</p>
+                <!-- Keep completion content in the existing panel with navigation available. -->
+                <div id="completion" class="completion" hidden>
+                    <img id="completion-icon" src="assets/icon/so-good.png" alt="so good"/>
+                    <div class="completion-content">
+                        <h3 id="completion-title">So Good!</h3>
+                        <div class="completion-actions">
+                            <button id="completion-songs" title="Choose another song">
+                                <img src="assets/icon/songs.png" alt="Choose another song"/>
+                            </button>
+                            <button id="restart" title="Play again">
+                            <img src="assets/icon/change.png" alt="Play again"/>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="keyboard"></div>
+        </div>
+    </section>
+    <p id="audio-status" class="audio-status" hidden></p>
+</main>
 </body>
 </html>
