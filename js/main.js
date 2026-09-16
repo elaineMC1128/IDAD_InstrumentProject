@@ -64,7 +64,6 @@ function navigate(next) {
     });
     back.hidden = next === 'welcome';
     back.querySelector('img').src = `assets/icon/${next === 'home' ? 'home' : 'back'}.png`;
-    document.querySelector('#information').hidden = next === 'welcome';
     document.querySelectorAll('.label-settings').forEach((panel) => {
         panel.hidden = panel.dataset.mode !== next;
     });
