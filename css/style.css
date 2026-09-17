@@ -317,6 +317,7 @@ button * {
     height: 3.9cqw;
     object-fit: contain;
     pointer-events: none;
+    transform: translateX(-6px);
 }
 
 .voice-options button:first-child img {
