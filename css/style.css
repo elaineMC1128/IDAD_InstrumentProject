@@ -128,11 +128,25 @@ button * {
     background: #fc8b17;
     display: grid;
     place-items: center;
+    animation: start-button-breathe 1.8s ease-in-out infinite;
+    box-shadow:
+        0 1.2cqw 0 #dc690b,
+        0 1.6cqw 1.2cqw rgba(60, 36, 16, 0.24);
     transition: transform 0.16s;
+    will-change: scale, transform;
 }
 
 .start-button:hover {
     transform: scale(1.04);
+}
+
+.start-button:active {
+    transform: translateY(0.7cqw) scale(1.01);
+    box-shadow:
+        inset 0 0.6cqw 0 rgba(255, 255, 255, 0.2),
+        inset 0 -0.55cqw 0 rgba(161, 72, 0, 0.3),
+        0 0.45cqw 0 #b95400,
+        0 0.8cqw 0.7cqw rgba(60, 36, 16, 0.2);
 }
 
 .start-button span {
@@ -142,6 +156,23 @@ button * {
     border-bottom: 5.1cqw solid transparent;
     border-left: 8.8cqw solid #ffe254;
     margin-left: 2.7cqw;
+}
+
+@keyframes start-button-breathe {
+    0%,
+    100% {
+        scale: 1;
+    }
+
+    50% {
+        scale: 1.045;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .start-button {
+        animation: none;
+    }
 }
 
 .mode-options {
