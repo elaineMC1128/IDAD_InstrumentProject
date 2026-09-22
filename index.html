@@ -29,20 +29,37 @@
     <section id="welcome" class="screen welcome">
         <h1>Project Title</h1>
         <button class="start-button" data-screen="home">
-            <span></span>
+            <img src="assets/icon/start.png" alt="start" />
         </button>
+        <p class="start-label">Tap Play</p>
     </section>
 
     <!-- Mode selection -->
     <section id="home" class="screen home" hidden>
         <div class="mode-options">
             <button class="mode-button" data-screen="freeplay">
-                <img src="assets/icon/play-mode-icon.png" alt="free play mode"/>
+                <span class="mode-circle">
+                    <img src="assets/icon/play-mode-icon.png" alt="free play mode"/>
+                </span>
+                <span class="mode-label">Play</span>
             </button>
             <button class="mode-button" data-screen="choose">
-                <img src="assets/icon/learning-mode-icon.png" alt="learning mode"/>
+                <span class="mode-circle">
+                    <img src="assets/icon/learning-mode-icon.png" alt="learning mode"/>
+                </span>
+                <span class="mode-label">Learn</span>
             </button>
         </div>
+        <div class="home-guide home-guide-intro">
+            <div class="speech-bubble speech-welcome">Welcome</div>
+            <img class="guide-character guide-character-intro" src="assets/character/character-1.png" alt="" />
+            <button class="guide-skip" type="button">Skip</button>
+        </div>
+        <div class="home-guide home-guide-choice">
+            <div class="speech-bubble speech-choice">choose one<br />to try!</div>
+            <img class="guide-character guide-character-choice" src="assets/character/character-2.png" alt="" />
+        </div>
+        <img class="guide-hand" src="assets/icon/hand-cursor.png" alt="" />
     </section>
 
     <!-- Song library -->

@@ -9,6 +9,8 @@ import { createLearning } from './learning.js';
 const screens = [...document.querySelectorAll('.screen')];
 const back = document.querySelector('#nav-back');
 const volume = document.querySelector('#volume');
+const homeScreen = document.querySelector('#home');
+const homeModeButtons = [...homeScreen.querySelectorAll('.mode-button')];
 const shortcuts = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'];
 const parents = { home: 'welcome', freeplay: 'home', choose: 'home', learning: 'home' };
 let current = 'welcome',
@@ -47,6 +49,100 @@ const modes = {
     learning: createLearning(document.querySelector('#learning'), navigate, reportError),
 };
 
+let homeIntroTimer,
+    homePulseStartTimer,
+    homePulseTimer,
+    homePulseTarget = 'play',
+    homePulseStep = 0,
+    homeGuidanceHasPlayed = false;
+
+function clearHomeGuidanceTimers() {
+    clearTimeout(homeIntroTimer);
+    clearTimeout(homePulseStartTimer);
+    clearTimeout(homePulseTimer);
+    homeIntroTimer = undefined;
+    homePulseStartTimer = undefined;
+    homePulseTimer = undefined;
+    homePulseStep = 0;
+}
+
+function setHomePulseTarget(target) {
+    homePulseTarget = target;
+    homeScreen.classList.toggle('is-pointing-play', target === 'play');
+    homeScreen.classList.toggle('is-pointing-learn', target === 'learn');
+}
+
+function startHomePulse() {
+    clearTimeout(homePulseTimer);
+    const sequence = ['play', 'learn', 'play', 'learn'];
+    homePulseStep = 0;
+
+    const showNextTarget = () => {
+        if (homePulseStep >= sequence.length) {
+            homeScreen.classList.remove('is-pointing-play', 'is-pointing-learn');
+            homePulseTimer = undefined;
+            return;
+        }
+
+        setHomePulseTarget(sequence[homePulseStep]);
+        homePulseStep++;
+        homePulseTimer = setTimeout(showNextTarget, 1200);
+    };
+
+    showNextTarget();
+}
+
+function showHomeChoices() {
+    clearHomeGuidanceTimers();
+    homeScreen.classList.remove('is-guidance-intro');
+    homeScreen.classList.add('is-guidance-active');
+    homeScreen.classList.remove('is-pointing-play', 'is-pointing-learn', 'is-locked-play', 'is-locked-learn');
+    homePulseStartTimer = setTimeout(startHomePulse, 1000);
+}
+
+function startHomeGuidance() {
+    if (homeGuidanceHasPlayed) {
+        stopHomeGuidance();
+        return;
+    }
+
+    homeGuidanceHasPlayed = true;
+    clearHomeGuidanceTimers();
+    homeScreen.classList.remove('is-guidance-active', 'is-pointing-play', 'is-pointing-learn', 'is-locked-play', 'is-locked-learn');
+    homeScreen.classList.add('is-guidance-intro');
+    homePulseTarget = 'play';
+    homeIntroTimer = setTimeout(showHomeChoices, 2000);
+}
+
+function stopHomeGuidance() {
+    clearHomeGuidanceTimers();
+    homeScreen.classList.remove('is-guidance-intro', 'is-guidance-active', 'is-pointing-play', 'is-pointing-learn', 'is-locked-play', 'is-locked-learn');
+}
+
+function lockHomeGuidanceOnButton(button) {
+    if (!homeScreen.classList.contains('is-guidance-active')) return;
+    clearHomeGuidanceTimers();
+    const target = button.dataset.screen === 'freeplay' ? 'play' : 'learn';
+    homeScreen.classList.remove('is-pointing-play', 'is-pointing-learn', 'is-locked-play', 'is-locked-learn');
+    homeScreen.classList.add(`is-locked-${target}`);
+}
+
+homeScreen.addEventListener(
+    'click',
+    (event) => {
+        if (!homeScreen.classList.contains('is-guidance-intro')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        showHomeChoices();
+    },
+    true,
+);
+
+homeModeButtons.forEach((button) => {
+    button.addEventListener('pointerenter', () => lockHomeGuidanceOnButton(button));
+    button.addEventListener('focusin', () => lockHomeGuidanceOnButton(button));
+});
+
 // the song-library remembers the entry screen
 // the learning screen always goes back to Home
 function navigate(next) {
@@ -54,6 +150,7 @@ function navigate(next) {
     if (next === 'choose' && current !== 'choose')
         songLibraryOrigin = current === 'learning' ? 'learning' : 'home';
     navigationVersion++;
+    if (current === 'home') stopHomeGuidance();
     modes[current]?.leave();
     stopAudio();
     held.clear();
@@ -67,6 +164,7 @@ function navigate(next) {
     document.querySelectorAll('.label-settings').forEach((panel) => {
         panel.hidden = panel.dataset.mode !== next;
     });
+    if (next === 'home') startHomeGuidance();
     modes[next]?.enter();
 }
 document.querySelectorAll('[data-screen]').forEach((button) =>

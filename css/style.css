@@ -105,27 +105,25 @@ button * {
  * -------------------------------------------------------------------------- */
 .welcome h1 {
     position: absolute;
-    top: 20%;
-    left: 21%;
+    top: 19.9%;
+    left: 21.1%;
     width: 58%;
-    height: 22.5%;
+    height: 22.2%;
     background: #d9d9d9;
     display: grid;
     place-items: center;
-    font-size: 7.2cqw;
+    font-size: 7.25cqw;
     font-weight: 700;
-    letter-spacing: 0.15cqw;
+    letter-spacing: 0;
     outline: none;
 }
 
 .start-button {
     position: absolute;
-    top: 54%;
-    left: 42.2%;
-    width: 15.6%;
+    top: 52.2%;
+    left: 40.6%;
+    width: 18.8%;
     aspect-ratio: 1;
-    border-radius: 50%;
-    background: #fc8b17;
     display: grid;
     place-items: center;
     transition: transform 0.16s;
@@ -135,25 +133,50 @@ button * {
     transform: scale(1.04);
 }
 
-.start-button span {
-    width: 0;
-    height: 0;
-    border-top: 5.1cqw solid transparent;
-    border-bottom: 5.1cqw solid transparent;
-    border-left: 8.8cqw solid #ffe254;
-    margin-left: 2.7cqw;
+.start-button:active {
+    transform: scale(0.97);
+}
+
+.start-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.start-label {
+    position: absolute;
+    color: #9D9D9D ;
+    top: 81.4%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2.25cqw;
+    font-weight: 700;
+    letter-spacing: 0;
 }
 
 .mode-options {
     position: absolute;
-    inset: 26.5% 15.2% auto;
+    top: 24%;
+    left: 12.5%;
+    right: 12.5%;
     display: flex;
     justify-content: space-between;
-    gap: 8.7cqw;
+    gap: 5.5cqw;
 }
 
 .mode-button {
-    flex: 1;
+    width: 35%;
+    display: grid;
+    grid-template-rows: auto min-content;
+    place-items: center;
+    gap: 2.6cqw;
+    color: #080808;
+    transition: transform 0.24s ease, filter 0.24s ease, opacity 0.24s ease;
+}
+
+.mode-circle {
+    width: 100%;
     aspect-ratio: 1;
     border: 0.65cqw solid #858583;
     border-radius: 50%;
@@ -167,9 +190,189 @@ button * {
 }
 
 .mode-button img {
-    width: 70%;
-    height: 70%;
+    width: 69%;
+    height: 69%;
     object-fit: contain;
+}
+
+.mode-label {
+    font-size: 2.6cqw;
+    font-weight: 700;
+    line-height: 1;
+    text-shadow:
+        0 0.18cqw 0 #ffffff,
+        0 0.24cqw 0.2cqw rgba(0, 0, 0, 0.18);
+}
+
+.home.is-guidance-intro .mode-button {
+    opacity: 0.35;
+    filter: grayscale(0.85);
+    pointer-events: none;
+}
+
+.home.is-guidance-intro .mode-button:hover {
+    transform: none;
+}
+
+.home.is-guidance-intro .mode-label {
+    color: #8c8c8c;
+}
+
+.home.is-guidance-active.is-pointing-play .mode-button[data-screen="freeplay"],
+.home.is-guidance-active.is-pointing-learn .mode-button[data-screen="choose"],
+.home.is-guidance-active.is-locked-play .mode-button[data-screen="freeplay"],
+.home.is-guidance-active.is-locked-learn .mode-button[data-screen="choose"] {
+    transform: scale(1.08);
+}
+
+.home.is-guidance-active.is-pointing-play .mode-button[data-screen="freeplay"] .mode-circle,
+.home.is-guidance-active.is-pointing-learn .mode-button[data-screen="choose"] .mode-circle,
+.home.is-guidance-active.is-locked-play .mode-button[data-screen="freeplay"] .mode-circle,
+.home.is-guidance-active.is-locked-learn .mode-button[data-screen="choose"] .mode-circle {
+    border-color: #ff861f;
+}
+
+.home-guide,
+.guide-hand {
+    pointer-events: none;
+}
+
+.home-guide-intro,
+.home-guide-choice,
+.guide-hand {
+    opacity: 0;
+    transition: opacity 0.24s ease;
+}
+
+.home.is-guidance-intro .home-guide-intro,
+.home.is-guidance-active .home-guide-choice,
+.home.is-guidance-active.is-pointing-play .guide-hand,
+.home.is-guidance-active.is-pointing-learn .guide-hand {
+    opacity: 1;
+}
+
+.guide-character {
+    position: absolute;
+    object-fit: contain;
+}
+
+.guide-character-intro {
+    width: 15.2%;
+    left: 39.1%;
+    top: 65.4%;
+}
+
+.guide-character-choice {
+    width: 12.5%;
+    right: 2.5%;
+    bottom: 1.4%;
+}
+
+.speech-bubble {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    background: #525bb2;
+    color: #ffffff;
+    font-weight: 700;
+    line-height: 1.08;
+    text-align: center;
+}
+
+.speech-bubble::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.speech-welcome {
+    left: 50.8%;
+    top: 60.4%;
+    width: 18.6%;
+    height: 13.2%;
+    border-radius: 3cqw;
+    font-size: 3.35cqw;
+}
+
+.speech-welcome::after {
+    left: 23%;
+    bottom: -2.7cqw;
+    border-top: 2.9cqw solid #525bb2;
+    border-right: 4.2cqw solid transparent;
+}
+
+.speech-choice {
+    right: 1.9%;
+    bottom: 25.8%;
+    width: 13.3%;
+    height: 9.6%;
+    border-radius: 2.3cqw;
+    font-size: 1.95cqw;
+}
+
+.speech-choice::after {
+    left: 39%;
+    bottom: -2.1cqw;
+    border-top: 2.35cqw solid #525bb2;
+    border-left: 2.1cqw solid transparent;
+    border-right: 2.1cqw solid transparent;
+}
+
+.guide-skip {
+    position: absolute;
+    left: 52.3%;
+    top: 89.1%;
+    z-index: 2;
+    min-width: 4.9cqw;
+    height: 3.2cqw;
+    border: 0.25cqw solid #8c8c8c;
+    border-radius: 0.65cqw;
+    background: rgba(255, 255, 255, 0.35);
+    color: #8c8c8c;
+    font-size: 1.65cqw;
+    font-weight: 700;
+    pointer-events: auto;
+}
+
+.guide-hand {
+    position: absolute;
+    z-index: 3;
+    left: 39%;
+    top: 63.1%;
+    width: 8.2%;
+    object-fit: contain;
+    transform-origin: 24% 22%;
+    animation: guide-hand-tap 1.2s ease-in-out infinite;
+}
+
+.home.is-pointing-play .guide-hand {
+    left: 39%;
+    top: 63.1%;
+}
+
+.home.is-pointing-learn .guide-hand {
+    left: 52.3%;
+    top: 63%;
+    --hand-direction: -1;
+}
+
+@keyframes guide-hand-tap {
+    0%,
+    100% {
+        transform: scaleX(var(--hand-direction, 1)) scale(1) rotate(-8deg);
+    }
+
+    50% {
+        transform: scaleX(var(--hand-direction, 1)) scale(0.92) rotate(-8deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .guide-hand {
+        animation: none;
+    }
 }
 
 /* --------------------------------------------------------------------------
