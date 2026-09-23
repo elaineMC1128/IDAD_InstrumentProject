@@ -72,6 +72,8 @@ const freeplayOnboardingSteps = [
 let freeplayOnboardingHasPlayed = false,
     freeplayOnboardingStep = -1,
     freeplayOnboardingActive = false,
+    freeplayOnboardingCheckTimer,
+    freeplayOnboardingFadeTimer,
     freeplayOnboardingCompleteTimer;
 
 function clearHomeGuidanceTimers() {
@@ -165,6 +167,7 @@ function renderFreeplayOnboardingStep() {
     const step = freeplayOnboardingSteps[freeplayOnboardingStep];
     if (!step) return;
 
+    freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
     freeplayOnboarding.dataset.step = step.id;
     freeplayOnboardingTitle.textContent = step.title;
     freeplayOnboardingCharacter.src = `assets/character/${step.character}`;
@@ -178,7 +181,11 @@ function renderFreeplayOnboardingStep() {
 }
 
 function renderFreeplayOnboardingComplete() {
+    const finalStep = freeplayOnboardingSteps.at(-1);
+    freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
     freeplayOnboarding.dataset.step = 'complete';
+    freeplayOnboardingTitle.textContent = finalStep.title;
+    freeplayOnboardingCharacter.src = `assets/character/${finalStep.character}`;
     freeplayOnboardingProgress.replaceChildren(
         ...freeplayOnboardingSteps.map(() => {
             const dot = document.createElement('span');
@@ -187,9 +194,16 @@ function renderFreeplayOnboardingComplete() {
         }),
     );
 
-    const complete = document.createElement('span');
-    complete.className = 'is-complete';
-    freeplayOnboardingProgress.append(complete);
+    freeplayOnboardingCheckTimer = setTimeout(() => {
+        const complete = document.createElement('span');
+        complete.className = 'is-complete';
+        freeplayOnboardingProgress.append(complete);
+    }, 500);
+
+    freeplayOnboardingFadeTimer = setTimeout(() => {
+        freeplayOnboarding.classList.add('is-progress-fading', 'is-complete-card-visible');
+        freeplayOnboardingCompleteTimer = setTimeout(stopFreeplayOnboarding, 2500);
+    }, 1000);
 }
 
 function startFreeplayOnboarding() {
@@ -202,11 +216,16 @@ function startFreeplayOnboarding() {
 }
 
 function stopFreeplayOnboarding() {
+    clearTimeout(freeplayOnboardingCheckTimer);
+    clearTimeout(freeplayOnboardingFadeTimer);
     clearTimeout(freeplayOnboardingCompleteTimer);
+    freeplayOnboardingCheckTimer = undefined;
+    freeplayOnboardingFadeTimer = undefined;
     freeplayOnboardingCompleteTimer = undefined;
     freeplayOnboardingActive = false;
     freeplayOnboardingStep = -1;
     freeplayOnboarding.hidden = true;
+    freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
     delete freeplayOnboarding.dataset.step;
 }
 

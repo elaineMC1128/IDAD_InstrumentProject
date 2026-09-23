@@ -563,6 +563,7 @@ button * {
     font-weight: 700;
     line-height: 1;
     white-space: nowrap;
+    transition: opacity 0.35s ease;
 }
 
 .freeplay-progress {
@@ -572,6 +573,7 @@ button * {
     display: flex;
     gap: 1.45cqw;
     transform: translateX(-50%);
+    transition: opacity 0.35s ease;
 }
 
 .freeplay-progress span {
@@ -720,7 +722,6 @@ button * {
     white-space: nowrap;
 }
 
-.freeplay-onboarding[data-step="complete"] .freeplay-step-title,
 .freeplay-onboarding[data-step="complete"] .freeplay-skip,
 .freeplay-onboarding[data-step="complete"] .freeplay-highlight,
 .freeplay-onboarding[data-step="complete"] .freeplay-guide-character,
@@ -728,7 +729,12 @@ button * {
     display: none;
 }
 
-.freeplay-onboarding[data-step="complete"] .freeplay-complete-card {
+.freeplay-onboarding.is-progress-fading .freeplay-step-title,
+.freeplay-onboarding.is-progress-fading .freeplay-progress {
+    opacity: 0;
+}
+
+.freeplay-onboarding.is-complete-card-visible .freeplay-complete-card {
     display: grid;
 }
 
