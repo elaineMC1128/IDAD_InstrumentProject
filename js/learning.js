@@ -15,14 +15,172 @@ export function createLearning(screen, navigate, reportError) {
     const demo = screen.querySelector('#demo');
     const restart = screen.querySelector('#restart');
     const completion = screen.querySelector('#completion');
+    const onboarding = screen.querySelector('.learning-onboarding');
+    const onboardingTitle = onboarding.querySelector('.learning-guide-title');
+    const onboardingProgress = onboarding.querySelector('.learning-guide-progress');
+    const onboardingSkip = onboarding.querySelector('.learning-guide-skip');
+    const onboardingCharacter = onboarding.querySelector('.performance-guide-character');
+    const onboardingLibraryConfirm = onboarding.querySelector('.learning-library-confirm');
+    const songLibraryButton = screen.querySelector('#song-library');
     const celebrations = [
         { title: 'So Good!', icon: 'so-good.png' },
         { title: 'Well Done!', icon: 'well-done.png' },
         { title: 'GoodJob!', icon: 'good-job.png' },
     ];
     let celebration;
+    let onboardingHasPlayed = false,
+        onboardingActive = false,
+        onboardingStep,
+        onboardingTimer,
+        onboardingColumnTimer,
+        onboardingCompleteTimer;
+    const onboardingSteps = [
+        { id: 'choose', title: '1. Choose a song', character: 'character-7.png' },
+        { id: 'watch', title: '2. Watch the Note', character: 'character-9.png' },
+        { id: 'press', title: '3. Press the Key', character: 'character-9.png' },
+        { id: 'hear', title: '4. Hear the Song', character: 'character-9.png' },
+        { id: 'library', title: '5. Music Library', character: 'character-7.png' },
+    ];
     screen.querySelector('#completion-songs').addEventListener('click', () => navigate('choose'));
     const keys = [...screen.querySelectorAll('.key')];
+
+    function clearOnboardingTimers() {
+        clearTimeout(onboardingTimer);
+        clearTimeout(onboardingColumnTimer);
+        clearTimeout(onboardingCompleteTimer);
+        onboardingTimer = undefined;
+        onboardingColumnTimer = undefined;
+        onboardingCompleteTimer = undefined;
+    }
+
+    function renderOnboardingProgress(completed, complete = false) {
+        onboardingProgress.replaceChildren(
+            ...Array.from({ length: onboardingSteps.length }, (_, index) => {
+                const dot = document.createElement('span');
+                if (index < completed) dot.classList.add('is-done');
+                return dot;
+            }),
+        );
+        if (complete) {
+            const done = document.createElement('span');
+            done.className = 'is-complete';
+            onboardingProgress.append(done);
+        }
+    }
+
+    function pauseGuideAnimations() {
+        guide.getAnimations({ subtree: true }).forEach((animation) => animation.pause());
+    }
+
+    function resumeGuideAnimations() {
+        guide.getAnimations({ subtree: true }).forEach((animation) => animation.play());
+    }
+
+    function setOnboardingStep(index) {
+        const step = onboardingSteps[index];
+        onboardingStep = step.id;
+        screen.classList.remove('learning-guidance-hear', 'learning-guidance-library');
+        onboarding.dataset.step = step.id;
+        onboardingTitle.textContent = step.title;
+        onboardingCharacter.src = `assets/character/${step.character}`;
+        onboarding.classList.remove(
+            'is-column-blinking',
+            'is-library-confirmed',
+            'is-press-guidance-dismissed',
+            'is-progress-fading',
+            'is-complete-card-visible',
+        );
+        if (!['watch', 'press'].includes(step.id))
+            screen.classList.remove('learning-column-visible', 'learning-column-blinking');
+        renderOnboardingProgress(index);
+    }
+
+    function showGuideColumn() {
+        screen.classList.add('learning-column-visible');
+    }
+
+    function stopOnboarding() {
+        clearOnboardingTimers();
+        onboardingActive = false;
+        onboardingStep = undefined;
+        onboarding.hidden = true;
+        screen.classList.remove('learning-guidance-hear', 'learning-guidance-library');
+        screen.classList.remove('learning-column-visible', 'learning-column-blinking');
+        onboarding.classList.remove(
+            'is-column-blinking',
+            'is-library-confirmed',
+            'is-press-guidance-dismissed',
+            'is-progress-fading',
+            'is-complete-card-visible',
+        );
+        delete onboarding.dataset.step;
+        resumeGuideAnimations();
+    }
+
+    function renderOnboardingComplete() {
+        onboardingStep = 'complete';
+        onboarding.dataset.step = 'complete';
+        onboarding.classList.add('is-progress-fading', 'is-complete-card-visible');
+        onboardingCompleteTimer = setTimeout(stopOnboarding, 2800);
+    }
+
+    function enterLibraryGuidance() {
+        setOnboardingStep(4);
+        screen.classList.add('learning-guidance-library');
+    }
+
+    function completeLibraryGuidance() {
+        if (!onboardingActive || onboardingStep !== 'library') return;
+        if (onboarding.classList.contains('is-library-confirmed')) return;
+        onboarding.classList.add('is-library-confirmed');
+        renderOnboardingProgress(onboardingSteps.length, true);
+        onboardingTimer = setTimeout(() => {
+            screen.classList.remove('learning-guidance-library');
+            renderOnboardingComplete();
+        }, 500);
+    }
+
+    function enterHearGuidance() {
+        setOnboardingStep(3);
+        screen.classList.add('learning-guidance-hear');
+    }
+
+    function enterPressGuidance() {
+        setOnboardingStep(2);
+        guide.querySelectorAll('.is-guide-note-framed').forEach((item) =>
+            item.classList.remove('is-guide-note-framed'),
+        );
+    }
+
+    function startLearningOnboarding() {
+        if (onboardingHasPlayed) return;
+        onboardingHasPlayed = true;
+        onboardingActive = true;
+        onboarding.hidden = false;
+        showGuideColumn();
+        screen.classList.add('learning-column-blinking');
+        onboardingColumnTimer = setTimeout(() => {
+            screen.classList.remove('learning-column-blinking');
+            guide.querySelector('.falling-note')?.classList.add('is-guide-note-framed');
+            onboardingTimer = setTimeout(enterPressGuidance, 1800);
+        }, 900);
+        onboardingTimer = setTimeout(() => {
+            setOnboardingStep(1);
+        }, 680);
+    }
+
+    onboardingSkip.addEventListener('click', stopOnboarding);
+    onboardingLibraryConfirm.addEventListener('click', completeLibraryGuidance);
+    songLibraryButton.addEventListener(
+        'click',
+        (event) => {
+            if (!onboardingActive || onboardingStep !== 'library') return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            completeLibraryGuidance();
+        },
+        true,
+    );
 
     /* --------------------------------------------------------------------------
      * Build song buttons from data and reset practice when a song is selected.
@@ -106,11 +264,18 @@ export function createLearning(screen, navigate, reportError) {
 
     // Capture a playback token and verify it after asynchronous audio initialization.
     demo.addEventListener('click', async () => {
+        if (onboardingActive && onboardingStep === 'hear') {
+            screen.classList.remove('learning-guidance-hear');
+        }
         if (playing) {
             stop();
+            if (onboardingActive && onboardingStep === 'hear') enterLibraryGuidance();
             position = 0;
             render();
             return;
+        }
+        if (onboardingActive && onboardingStep === 'hear') {
+            renderOnboardingProgress(4);
         }
         const token = ++generation;
         try {
@@ -158,6 +323,13 @@ export function createLearning(screen, navigate, reportError) {
                 elapsed >= melody.timeline[position + 1].time
             )
                 position++;
+            if (onboardingActive && onboardingStep === 'hear' && position >= 14) {
+                stop();
+                position = 0;
+                render();
+                enterLibraryGuidance();
+                return;
+            }
             const currentNote = melody.timeline[position];
             const fraction = (elapsed - currentNote.time) / currentNote.duration;
             const step = currentNote.phraseEnd ? 1.25 : 1;
@@ -191,9 +363,11 @@ export function createLearning(screen, navigate, reportError) {
             screen.querySelector('#selected-title').textContent = song.title;
             screen.querySelector('#selected-icon').src = `assets/icon/${song.icon}`;
             render();
+            startLearningOnboarding();
         },
         leave() {
             active = false;
+            stopOnboarding();
             stop();
         },
 
@@ -201,14 +375,28 @@ export function createLearning(screen, navigate, reportError) {
         press(index) {
             if (playing || position >= song.notes.length) return;
             playNote(index);
+            if (onboardingActive && onboardingStep === 'press') {
+                onboarding.classList.add('is-press-guidance-dismissed');
+            }
             if (index === song.notes[position].key) {
+                const matchedPosition = position;
                 // Catch the current note immediately; guidance animation never gates correct input.
                 keys[index].classList.remove('wrong');
                 keys[index].animate([{ filter: 'brightness(1.35)' }, { filter: 'brightness(1)' }], {
                     duration: 220,
                 });
                 position++;
+                if (onboardingActive && onboardingStep === 'press') {
+                    screen.classList.remove('learning-column-visible', 'learning-column-blinking');
+                }
                 render();
+                if (
+                    onboardingActive &&
+                    matchedPosition >= 6 &&
+                    onboardingStep === 'press'
+                ) {
+                    enterHearGuidance();
+                }
             } else {
                 status.textContent = 'Try the key with the white dot';
                 keys[index].classList.remove('wrong');

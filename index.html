@@ -27,7 +27,7 @@
 
     <!-- Welcome screen -->
     <section id="welcome" class="screen welcome">
-        <h1>Project Title</h1>
+        <h1>PopNotes</h1>
         <button class="start-button" data-screen="home">
             <img src="assets/icon/start.png" alt="start" />
         </button>
@@ -59,13 +59,20 @@
             <div class="speech-bubble speech-choice">choose one<br />to try!</div>
             <img class="guide-character guide-character-choice" src="assets/character/character-2.png" alt="" />
         </div>
-        <img class="guide-hand" src="assets/icon/hand-cursor.png" alt="" />
+        <img class="guide-hand" src="assets/icon/hand-cursor.png" alt="hand cursor" />
     </section>
 
     <!-- Song library -->
     <section id="choose" class="screen choose" hidden>
         <img class="choice-icon" src="assets/icon/choice.png" alt="song-options"/>
         <div id="song-options" class="song-options"></div>
+        <div class="choose-guidance" hidden>
+            <div class="learning-guide-title">1. Choose a song</div>
+            <div class="learning-guide-progress" aria-hidden="true"></div>
+            <button class="learning-guide-skip" type="button">× Skip</button>
+            <img class="learning-guide-character choose-guide-character" src="assets/character/character-7.png" alt="character-7" />
+            <img class="learning-guide-hand choose-guide-hand" src="assets/icon/hand-cursor.png" alt="hand cursor" />
+        </div>
     </section>
 
     <!-- Free play -->
@@ -180,6 +187,26 @@
                 </div>
             </div>
             <div class="keyboard"></div>
+        </div>
+        <div class="learning-onboarding" hidden>
+            <div class="learning-guide-title"></div>
+            <div class="learning-guide-progress" aria-hidden="true"></div>
+            <button class="learning-guide-skip" type="button">× Skip</button>
+            <img class="learning-guide-character performance-guide-character" src="assets/character/character-7.png" alt="" />
+            <img class="learning-guide-hand performance-guide-hand" src="assets/icon/hand-cursor.png" alt="hand cursor" />
+            <div class="learning-guide-key-frame"></div>
+            <div class="learning-library-target">
+                <button type="button"><img src="assets/icon/star.png" alt="" /></button>
+                <button type="button"><img src="assets/icon/clap.png" alt="" /></button>
+                <button type="button"><img src="assets/icon/happy.png" alt="" /></button>
+                <button class="learning-library-confirm" type="button" aria-label="Complete music library guide">
+                    <img src="assets/icon/complete.png" alt="" />
+                </button>
+            </div>
+            <div class="learning-complete-card">
+                <img src="assets/character/character-10.png" alt="" />
+                <span>Try Playing!</span>
+            </div>
         </div>
     </section>
     <p id="audio-status" class="audio-status" hidden></p>

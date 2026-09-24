@@ -114,10 +114,9 @@ button * {
     left: 21.1%;
     width: 58%;
     height: 22.2%;
-    background: #d9d9d9;
     display: grid;
     place-items: center;
-    font-size: 7.25cqw;
+    font-size: 12.25cqw;
     font-weight: 700;
     letter-spacing: 0;
     outline: none;
@@ -125,9 +124,9 @@ button * {
 
 .start-button {
     position: absolute;
-    top: 52.2%;
-    left: 40.6%;
-    width: 18.8%;
+    top: 43%;
+    left: 33.6%;
+    width: 32.8%;
     aspect-ratio: 1;
     display: grid;
     place-items: center;
@@ -413,6 +412,7 @@ button * {
 }
 
 .song-card .picture {
+    position: relative;
     width: 100%;
     aspect-ratio: 1.06;
     display: grid;
@@ -432,6 +432,344 @@ button * {
     width: 76%;
     height: 76%;
     object-fit: contain;
+}
+
+.choose.is-learning-song-guidance .song-card:not(:first-child) {
+    opacity: 0.35;
+    filter: grayscale(0.75);
+}
+
+.choose.is-learning-song-guidance .song-card:first-child .picture::after {
+    content: "";
+    position: absolute;
+    inset: -0.8cqw;
+    border: 0.65cqw solid #f63636;
+    border-radius: 2.1cqw;
+    animation: onboarding-blink 0.82s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.choose-guidance,
+.learning-onboarding {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+}
+
+.learning-guide-title {
+    position: absolute;
+    top: 3.5%;
+    left: 78%;
+    min-width: 22cqw;
+    transform: translateX(-50%);
+    border-radius: 1cqw;
+    background: #ffffff;
+    padding: 0.8cqw 2.1cqw;
+    text-align: center;
+    font-size: 2.6cqw;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    transition: opacity 0.35s ease;
+}
+
+.learning-guide-progress {
+    position: absolute;
+    top: 11.9%;
+    left: 78%;
+    display: flex;
+    gap: 1.2cqw;
+    transform: translateX(-50%);
+    transition: opacity 0.35s ease;
+}
+
+.learning-guide-progress span {
+    width: 1.25cqw;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #d0d4d5;
+}
+
+.learning-guide-progress span.is-done {
+    background: #ff861f;
+}
+
+.learning-guide-progress span.is-complete {
+    border-radius: 0;
+    background: url("../assets/icon/complete.png") center / contain no-repeat;
+}
+
+.learning-guide-skip {
+    position: absolute;
+    top: 11.3%;
+    left: 90%;
+    min-width: 4.8cqw;
+    height: 2.5cqw;
+    border: 0.2cqw solid #8c8c8c;
+    border-radius: 0.45cqw;
+    background: rgba(255, 255, 255, 0.45);
+    color: #777777;
+    font: 700 1.25cqw sans-serif;
+    pointer-events: auto;
+}
+
+.learning-guide-character,
+.learning-guide-hand,
+.learning-guide-key-frame,
+.learning-library-target,
+.learning-complete-card {
+    position: absolute;
+    pointer-events: none;
+}
+
+.choose-guide-character {
+    left: -0.6%;
+    bottom: 2.4%;
+    width: 16%;
+    transform: scaleX(-1);
+}
+
+.choose-guide-hand {
+    left: 31%;
+    top: 80%;
+    width: 6%;
+    transform: rotate(-30deg);
+}
+
+.performance-guide-character {
+    left: -4%;
+    top: 50%;
+    width: 17%;
+    transform: scaleX(-1);
+}
+
+.performance-guide-hand {
+    width: 4.2%;
+    z-index: 4;
+}
+
+.learning-onboarding[data-step="watch"] .performance-guide-hand {
+    display: none;
+}
+
+.learning-onboarding[data-step="hear"] .performance-guide-character {
+    left: 84%;
+    top: 55%;
+    transform: scaleX(1);
+}
+
+.learning-onboarding[data-step="library"] .performance-guide-character {
+    left: -1%;
+    top: 13%;
+}
+
+#learning.learning-column-visible .note-guide::before {
+    content: "";
+    position: absolute;
+    left: 0.4%;
+    top: 0;
+    width: 12%;
+    height: 100%;
+    background: rgba(204, 62, 66, 0.28);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#learning.learning-column-blinking .note-guide::before {
+    animation: onboarding-blink 0.42s ease-in-out 4 alternate;
+}
+
+.learning-guide-key-frame {
+    display: none;
+    left: 19.8%;
+    bottom: 4.5%;
+    width: 7.6%;
+    height: 17%;
+    border: 0.55cqw solid #ff861f;
+    border-radius: 0.8cqw;
+    animation: onboarding-blink 0.82s ease-in-out infinite alternate;
+}
+
+.learning-onboarding[data-step="press"] .learning-guide-key-frame {
+    display: block;
+}
+
+.learning-onboarding[data-step="press"] .performance-guide-hand {
+    left: 21.5%;
+    bottom: 0.6%;
+}
+
+.learning-onboarding[data-step="press"].is-press-guidance-dismissed .learning-guide-key-frame,
+.learning-onboarding[data-step="press"].is-press-guidance-dismissed .performance-guide-hand {
+    display: none;
+}
+
+.learning-onboarding[data-step="hear"] .performance-guide-hand {
+    right: 13%;
+    bottom: 18%;
+}
+
+.learning-onboarding[data-step="library"] .performance-guide-hand {
+    left: 23%;
+    top: 23.2%;
+    z-index: 11;
+    animation: learning-library-hand-route 3.5s ease-in-out forwards;
+}
+
+.learning-onboarding[data-step="library"]::before {
+    content: "";
+    position: absolute;
+    inset: -100vmax;
+    background: rgba(255, 255, 255, 0.58);
+    z-index: 8;
+}
+
+.learning-onboarding[data-step="library"] > * {
+    z-index: 9;
+}
+
+.learning-library-target {
+    display: none;
+    left: 19%;
+    top: 40%;
+    gap: 1.5cqw;
+    padding: 1.5cqw;
+    border: 0.45cqw dashed #ff861f;
+    border-radius: 1.3cqw;
+}
+
+.learning-onboarding[data-step="library"] .learning-library-target {
+    display: flex;
+}
+
+.learning-library-target > button:not(.learning-library-confirm) {
+    width: 5.8cqw;
+    aspect-ratio: 1;
+    border: 0.35cqw solid #ff861f;
+    border-radius: 0.8cqw;
+    background: #fff6ea;
+    display: grid;
+    place-items: center;
+}
+
+.learning-library-target > button:not(.learning-library-confirm) img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+}
+
+.learning-library-confirm {
+    position: absolute;
+    right: -1.5cqw;
+    top: -1.5cqw;
+    width: 3.2cqw;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    opacity: 0.35;
+    pointer-events: auto;
+}
+
+.learning-library-confirm img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.learning-onboarding.is-library-confirmed .learning-library-confirm {
+    opacity: 1;
+}
+
+.learning-onboarding.is-library-confirmed .performance-guide-character,
+.learning-onboarding.is-library-confirmed .performance-guide-hand {
+    display: none;
+}
+
+.learning-complete-card {
+    display: none;
+    left: 20.5%;
+    top: 28%;
+    width: 54%;
+    height: 36%;
+    grid-template-columns: 42% 1fr;
+    align-items: center;
+    border: 1.3cqw solid #ff861f;
+    border-radius: 2cqw;
+    background: #ffd9aa;
+}
+
+.learning-complete-card img {
+    width: 75%;
+    height: 92%;
+    object-fit: contain;
+    justify-self: center;
+}
+
+.learning-complete-card span {
+    color: #525bb2;
+    font-size: 4.5cqw;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.learning-onboarding.is-progress-fading .learning-guide-title,
+.learning-onboarding.is-progress-fading .learning-guide-progress {
+    opacity: 0;
+}
+
+.learning-onboarding.is-complete-card-visible .learning-complete-card {
+    display: grid;
+    animation: learning-complete-card-in 1s ease-out both;
+}
+
+.learning-onboarding.is-complete-card-visible .learning-guide-skip,
+.learning-onboarding.is-complete-card-visible .learning-guide-character,
+.learning-onboarding.is-complete-card-visible .learning-guide-hand,
+.learning-onboarding.is-complete-card-visible .learning-library-target {
+    display: none;
+}
+
+.falling-note.is-guide-note-framed {
+    animation: note-frame-blink 0.42s ease-in-out 4 alternate;
+}
+
+@keyframes learning-complete-card-in {
+    from {
+        opacity: 0;
+        transform: scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes note-frame-blink {
+    from {
+        box-shadow: 0 0 0 0.38cqw rgba(255, 226, 84, 0);
+    }
+
+    to {
+        box-shadow: 0 0 0 0.38cqw #ffffff;
+    }
+}
+
+@keyframes learning-library-hand-route {
+    0%,
+    25% {
+        transform: translate(0, 0);
+    }
+
+    68.5% {
+        transform: translate(6cqw, 20.8cqw);
+    }
+
+    100% {
+        transform: translate(18.4cqw, 13cqw);
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -588,21 +926,8 @@ button * {
 }
 
 .freeplay-progress span.is-complete {
-    position: relative;
-    background: #ffffff;
-    border: 0.28cqw solid #16b96d;
-}
-
-.freeplay-progress span.is-complete::after {
-    content: "";
-    position: absolute;
-    left: 27%;
-    top: 11%;
-    width: 35%;
-    height: 58%;
-    border: solid #16b96d;
-    border-width: 0 0.24cqw 0.24cqw 0;
-    transform: rotate(45deg);
+    border-radius: 0;
+    background: url("../assets/icon/complete.png") center / contain no-repeat;
 }
 
 .freeplay-skip {
@@ -1036,6 +1361,24 @@ button * {
     height: 2.8cqw;
     font-size: 1.8cqw;
     z-index: 1;
+}
+
+.learning-guidance-hear .demo-button::after {
+    content: "";
+    position: absolute;
+    inset: -0.65cqw;
+    border: 0.4cqw solid #f63636;
+    border-radius: 50%;
+    animation: onboarding-blink 0.82s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.learning-guidance-library .instrument-controls {
+    z-index: 10;
+}
+
+.learning-guidance-library .learning-onboarding {
+    z-index: auto;
 }
 
 .falling-note {

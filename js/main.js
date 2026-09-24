@@ -11,6 +11,10 @@ const back = document.querySelector('#nav-back');
 const volume = document.querySelector('#volume');
 const homeScreen = document.querySelector('#home');
 const homeModeButtons = [...homeScreen.querySelectorAll('.mode-button')];
+const chooseScreen = document.querySelector('#choose');
+const chooseGuidance = chooseScreen.querySelector('.choose-guidance');
+const chooseGuidanceProgress = chooseGuidance.querySelector('.learning-guide-progress');
+const chooseGuidanceSkip = chooseGuidance.querySelector('.learning-guide-skip');
 const shortcuts = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'];
 const parents = { home: 'welcome', freeplay: 'home', choose: 'home', learning: 'home' };
 let current = 'welcome',
@@ -75,6 +79,7 @@ let freeplayOnboardingHasPlayed = false,
     freeplayOnboardingCheckTimer,
     freeplayOnboardingFadeTimer,
     freeplayOnboardingCompleteTimer;
+let chooseGuidanceHasPlayed = false;
 
 function clearHomeGuidanceTimers() {
     clearTimeout(homeIntroTimer);
@@ -153,6 +158,10 @@ homeScreen.addEventListener(
         if (!homeScreen.classList.contains('is-guidance-intro')) return;
         event.preventDefault();
         event.stopPropagation();
+        if (event.target.closest('.guide-skip')) {
+            stopHomeGuidance();
+            return;
+        }
         showHomeChoices();
     },
     true,
@@ -250,6 +259,39 @@ freeplayOnboardingSkip.addEventListener('click', () => {
     stopFreeplayOnboarding();
 });
 
+function renderLearningProgress(container, completed, total = 5, complete = false) {
+    container.replaceChildren(
+        ...Array.from({ length: total }, (_, index) => {
+            const dot = document.createElement('span');
+            if (index < completed) dot.classList.add('is-done');
+            return dot;
+        }),
+    );
+    if (complete) {
+        const done = document.createElement('span');
+        done.className = 'is-complete';
+        container.append(done);
+    }
+}
+
+function startChooseGuidance() {
+    if (chooseGuidanceHasPlayed) return;
+    chooseGuidanceHasPlayed = true;
+    chooseScreen.classList.add('is-learning-song-guidance');
+    chooseGuidance.hidden = false;
+    renderLearningProgress(chooseGuidanceProgress, 0);
+}
+
+function stopChooseGuidance() {
+    chooseScreen.classList.remove('is-learning-song-guidance');
+    chooseGuidance.hidden = true;
+}
+
+chooseGuidanceSkip.addEventListener('click', stopChooseGuidance);
+document.querySelector('#song-options').addEventListener('click', (event) => {
+    if (!chooseGuidance.hidden && event.target.closest('.song-card')) stopChooseGuidance();
+});
+
 // the song-library remembers the entry screen
 // the learning screen always goes back to Home
 function navigate(next) {
@@ -259,6 +301,7 @@ function navigate(next) {
     navigationVersion++;
     if (current === 'home') stopHomeGuidance();
     if (current === 'freeplay') stopFreeplayOnboarding();
+    if (current === 'choose') stopChooseGuidance();
     modes[current]?.leave();
     stopAudio();
     held.clear();
@@ -274,6 +317,7 @@ function navigate(next) {
     });
     if (next === 'home') startHomeGuidance();
     if (next === 'freeplay') startFreeplayOnboarding();
+    if (next === 'choose') startChooseGuidance();
     modes[next]?.enter();
 }
 document.querySelectorAll('[data-screen]').forEach((button) =>
@@ -375,11 +419,16 @@ document.addEventListener('click', (event) => {
     if (button && !button.classList.contains('key')) playClick();
 });
 
-// Both switches control labels only, preserve keyboard input, and share state across modes.
-const labelSettings = { keyboard: false, note: false };
+// Label visibility is retained independently for each performance mode.
+const labelSettings = {
+    freeplay: { keyboard: false, note: false },
+    learning: { keyboard: true, note: false },
+};
 document.querySelectorAll('.performance').forEach((screen) => {
     const panel = document.createElement('div');
     panel.className = 'label-settings';
+    panel.dataset.mode = screen.id;
+    const modeSettings = labelSettings[screen.id];
     for (const [type, label] of [
         ['keyboard', 'Show keyboard letters'],
         ['note', 'Show solfege'],
@@ -389,27 +438,31 @@ document.querySelectorAll('.performance').forEach((screen) => {
         toggle.title = label;
         toggle.dataset.labelType = type;
         toggle.innerHTML = `<img src="assets/icon/${type}.png"><span class="switch-track"></span>`;
+        toggle.classList.toggle('is-on', modeSettings[type]);
         toggle.addEventListener('click', () => {
-            labelSettings[type] = !labelSettings[type];
+            modeSettings[type] = !modeSettings[type];
             if (panel.dataset.mode === 'freeplay')
                 advanceFreeplayOnboarding(type === 'keyboard' ? 'keyboard' : 'notes');
-            document.querySelectorAll(`[data-label-type="${type}"]`).forEach((button) => {
-                button.classList.toggle('is-on', labelSettings[type]);
-            });
+            toggle.classList.toggle('is-on', modeSettings[type]);
             const labelClass = type === 'keyboard' ? '.shortcut-label' : '.solfege-label';
-            document.querySelectorAll(labelClass).forEach((text) => {
-                text.hidden = !labelSettings[type];
+            screen.querySelectorAll(labelClass).forEach((text) => {
+                text.hidden = !modeSettings[type];
             });
-            document.querySelectorAll('.keyboard').forEach((keyboard) => {
+            screen.querySelectorAll('.keyboard').forEach((keyboard) => {
                 keyboard.classList.toggle(
                     'both-labels',
-                    labelSettings.keyboard && labelSettings.note,
+                    modeSettings.keyboard && modeSettings.note,
                 );
             });
         });
         panel.append(toggle);
     }
-    panel.dataset.mode = screen.id;
+    screen.querySelectorAll('.shortcut-label').forEach((text) => {
+        text.hidden = !modeSettings.keyboard;
+    });
+    screen.querySelectorAll('.solfege-label').forEach((text) => {
+        text.hidden = !modeSettings.note;
+    });
     panel.hidden = true;
     document.querySelector('.app').append(panel);
 });
