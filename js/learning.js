@@ -53,6 +53,7 @@ export function createLearning(screen, navigate, reportError) {
         onboardingCompleteTimer = undefined;
     }
 
+    // Progress dots make each task feel achievable: they show that the child is already on the way and only has a little more to finish.
     function renderOnboardingProgress(completed, complete = false) {
         onboardingProgress.replaceChildren(
             ...Array.from({ length: onboardingSteps.length }, (_, index) => {
@@ -68,14 +69,6 @@ export function createLearning(screen, navigate, reportError) {
         }
     }
 
-    function pauseGuideAnimations() {
-        guide.getAnimations({ subtree: true }).forEach((animation) => animation.pause());
-    }
-
-    function resumeGuideAnimations() {
-        guide.getAnimations({ subtree: true }).forEach((animation) => animation.play());
-    }
-
     function setOnboardingStep(index) {
         const step = onboardingSteps[index];
         onboardingStep = step.id;
@@ -84,7 +77,6 @@ export function createLearning(screen, navigate, reportError) {
         onboardingTitle.textContent = step.title;
         onboardingCharacter.src = `assets/character/${step.character}`;
         onboarding.classList.remove(
-            'is-column-blinking',
             'is-library-confirmed',
             'is-press-guidance-dismissed',
             'is-progress-fading',
@@ -107,14 +99,12 @@ export function createLearning(screen, navigate, reportError) {
         screen.classList.remove('learning-guidance-hear', 'learning-guidance-library');
         screen.classList.remove('learning-column-visible', 'learning-column-blinking');
         onboarding.classList.remove(
-            'is-column-blinking',
             'is-library-confirmed',
             'is-press-guidance-dismissed',
             'is-progress-fading',
             'is-complete-card-visible',
         );
         delete onboarding.dataset.step;
-        resumeGuideAnimations();
     }
 
     function renderOnboardingComplete() {
@@ -390,6 +380,8 @@ export function createLearning(screen, navigate, reportError) {
                     screen.classList.remove('learning-column-visible', 'learning-column-blinking');
                 }
                 render();
+                // Twinkle Twinkle has seven notes in each phrase. I wait for one full phrase (positions 0–6) so Step 4
+                // does not interrupt the child after the first key.
                 if (
                     onboardingActive &&
                     matchedPosition >= 6 &&

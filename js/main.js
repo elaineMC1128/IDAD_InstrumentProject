@@ -56,7 +56,6 @@ const modes = {
 let homeIntroTimer,
     homePulseStartTimer,
     homePulseTimer,
-    homePulseTarget = 'play',
     homePulseStep = 0,
     homeGuidanceHasPlayed = false;
 
@@ -92,7 +91,6 @@ function clearHomeGuidanceTimers() {
 }
 
 function setHomePulseTarget(target) {
-    homePulseTarget = target;
     homeScreen.classList.toggle('is-pointing-play', target === 'play');
     homeScreen.classList.toggle('is-pointing-learn', target === 'learn');
 }
@@ -135,7 +133,6 @@ function startHomeGuidance() {
     clearHomeGuidanceTimers();
     homeScreen.classList.remove('is-guidance-active', 'is-pointing-play', 'is-pointing-learn', 'is-locked-play', 'is-locked-learn');
     homeScreen.classList.add('is-guidance-intro');
-    homePulseTarget = 'play';
     homeIntroTimer = setTimeout(showHomeChoices, 2000);
 }
 
@@ -172,6 +169,8 @@ homeModeButtons.forEach((button) => {
     button.addEventListener('focusin', () => lockHomeGuidanceOnButton(button));
 });
 
+// These progress dots show how far the child has come.
+// The small game-like sense of progress encourages them to finish what they started.
 function renderFreeplayOnboardingStep() {
     const step = freeplayOnboardingSteps[freeplayOnboardingStep];
     if (!step) return;
@@ -181,7 +180,7 @@ function renderFreeplayOnboardingStep() {
     freeplayOnboardingTitle.textContent = step.title;
     freeplayOnboardingCharacter.src = `assets/character/${step.character}`;
     freeplayOnboardingProgress.replaceChildren(
-        ...freeplayOnboardingSteps.map((item, index) => {
+        ...freeplayOnboardingSteps.map((_, index) => {
             const dot = document.createElement('span');
             if (index < freeplayOnboardingStep) dot.classList.add('is-done');
             return dot;
@@ -247,7 +246,6 @@ function advanceFreeplayOnboarding(expectedStep) {
     if (freeplayOnboardingStep >= freeplayOnboardingSteps.length) {
         freeplayOnboardingActive = false;
         renderFreeplayOnboardingComplete();
-        freeplayOnboardingCompleteTimer = setTimeout(stopFreeplayOnboarding, 2500);
         return;
     }
 
@@ -255,23 +253,13 @@ function advanceFreeplayOnboarding(expectedStep) {
 }
 
 freeplayOnboardingSkip.addEventListener('click', () => {
-    freeplayOnboardingHasPlayed = true;
     stopFreeplayOnboarding();
 });
 
-function renderLearningProgress(container, completed, total = 5, complete = false) {
-    container.replaceChildren(
-        ...Array.from({ length: total }, (_, index) => {
-            const dot = document.createElement('span');
-            if (index < completed) dot.classList.add('is-done');
-            return dot;
-        }),
+function renderChooseGuidanceProgress() {
+    chooseGuidanceProgress.replaceChildren(
+        ...Array.from({ length: 5 }, () => document.createElement('span')),
     );
-    if (complete) {
-        const done = document.createElement('span');
-        done.className = 'is-complete';
-        container.append(done);
-    }
 }
 
 function startChooseGuidance() {
@@ -279,7 +267,7 @@ function startChooseGuidance() {
     chooseGuidanceHasPlayed = true;
     chooseScreen.classList.add('is-learning-song-guidance');
     chooseGuidance.hidden = false;
-    renderLearningProgress(chooseGuidanceProgress, 0);
+    renderChooseGuidanceProgress();
 }
 
 function stopChooseGuidance() {
@@ -419,7 +407,9 @@ document.addEventListener('click', (event) => {
     if (button && !button.classList.contains('key')) playClick();
 });
 
-// Label visibility is retained independently for each performance mode.
+// I keep keyboard letters on by default in Learning mode because this project encourages keyboard play.
+// Seeing the matching letters straight away makes it easier to start playing.
+// Each mode still remembers its own label choices.
 const labelSettings = {
     freeplay: { keyboard: false, note: false },
     learning: { keyboard: true, note: false },
