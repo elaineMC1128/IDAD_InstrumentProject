@@ -48,6 +48,51 @@
         </div>
     </section>
 
+    <!-- Home guidance -->
+    <div
+            id="home-guidance"
+            class="guidance-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="home-guidance-title"
+            hidden
+    >
+        <div class="guidance-dialog">
+            <div class="guidance-header">
+                <h2 id="home-guidance-title">Choose a Mode</h2>
+                <button id="close-home-guidance" class="guidance-close" aria-label="Close guidance">
+                    <img src="assets/icon/close.png" alt=""/>
+                </button>
+            </div>
+            <div class="guidance-modes">
+                <div class="guidance-mode">
+                    <img
+                            class="guidance-mode-icon"
+                            src="assets/icon/play-mode-icon.png"
+                            alt="Free play mode"
+                    />
+                    <img
+                            class="guidance-preview"
+                            src="assets/guidanceOnDemand/freeplay mode.png"
+                            alt="Free play mode preview"
+                    />
+                </div>
+                <div class="guidance-mode">
+                    <img
+                            class="guidance-mode-icon"
+                            src="assets/icon/learning-mode-icon.png"
+                            alt="Learning mode"
+                    />
+                    <img
+                            class="guidance-preview"
+                            src="assets/guidanceOnDemand/learning mode.png"
+                            alt="Learning mode preview"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Song library -->
     <section id="choose" class="screen choose" hidden>
         <img class="choice-icon" src="assets/icon/choice.png" alt="song-options"/>

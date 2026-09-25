@@ -9,6 +9,9 @@ import { createLearning } from './learning.js';
 const screens = [...document.querySelectorAll('.screen')];
 const back = document.querySelector('#nav-back');
 const volume = document.querySelector('#volume');
+const information = document.querySelector('#information');
+const homeGuidance = document.querySelector('#home-guidance');
+const closeHomeGuidance = document.querySelector('#close-home-guidance');
 const shortcuts = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'];
 const parents = { home: 'welcome', freeplay: 'home', choose: 'home', learning: 'home' };
 let current = 'welcome',
@@ -59,12 +62,13 @@ function navigate(next) {
     held.clear();
     document.querySelectorAll('.key.active').forEach((key) => key.classList.remove('active'));
     current = next;
+    homeGuidance.hidden = true;
     screens.forEach((screen) => {
         screen.hidden = screen.id !== next;
     });
     back.hidden = next === 'welcome';
     back.querySelector('img').src = `assets/icon/${next === 'home' ? 'home' : 'back'}.png`;
-    document.querySelector('#information').hidden = next === 'welcome';
+    information.hidden = next === 'welcome';
     document.querySelectorAll('.label-settings').forEach((panel) => {
         panel.hidden = panel.dataset.mode !== next;
     });
@@ -80,6 +84,22 @@ document.querySelectorAll('[data-screen]').forEach((button) =>
 back.addEventListener('click', () =>
     navigate(current === 'choose' ? songLibraryOrigin : parents[current] || 'welcome'),
 );
+
+information.addEventListener('click', () => {
+    if (current !== 'home') return;
+    homeGuidance.hidden = false;
+    closeHomeGuidance.focus();
+});
+closeHomeGuidance.addEventListener('click', () => {
+    homeGuidance.hidden = true;
+    information.focus();
+});
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !homeGuidance.hidden) {
+        homeGuidance.hidden = true;
+        information.focus();
+    }
+});
 
 // Update the mute icon while the audio module controls sound.
 volume.addEventListener('click', () => {
