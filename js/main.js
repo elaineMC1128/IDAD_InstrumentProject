@@ -159,7 +159,7 @@ document.addEventListener('click', (event) => {
 });
 
 // Both switches control labels only, preserve keyboard input, and share state across modes.
-const labelSettings = { keyboard: false, note: false };
+const labelSettings = { keyboard: true, note: false };
 document.querySelectorAll('.performance').forEach((screen) => {
     const panel = document.createElement('div');
     panel.className = 'label-settings';
@@ -172,6 +172,7 @@ document.querySelectorAll('.performance').forEach((screen) => {
         toggle.title = label;
         toggle.dataset.labelType = type;
         toggle.innerHTML = `<img src="assets/icon/${type}.png"><span class="switch-track"></span>`;
+        toggle.classList.toggle('is-on', labelSettings[type]);
         toggle.addEventListener('click', () => {
             labelSettings[type] = !labelSettings[type];
             document.querySelectorAll(`[data-label-type="${type}"]`).forEach((button) => {
@@ -190,6 +191,9 @@ document.querySelectorAll('.performance').forEach((screen) => {
         });
         panel.append(toggle);
     }
+    screen.querySelectorAll('.shortcut-label').forEach((text) => {
+        text.hidden = !labelSettings.keyboard;
+    });
     panel.dataset.mode = screen.id;
     panel.hidden = true;
     document.querySelector('.app').append(panel);
