@@ -2,6 +2,7 @@
 import { NOTES, COLORS, initAudio, setMuted, stopAudio, playClick } from './audio.js';
 import { createFreeplay } from './freeplay.js';
 import { createFreeplayGuidance } from './freeplay-guidance.js';
+import { createChooseGuidance } from './choose-guidance.js';
 import { createLearning } from './learning.js';
 
 /* --------------------------------------------------------------------------
@@ -55,6 +56,10 @@ const freeplayGuidance = createFreeplayGuidance(
     information,
     reportError,
 );
+const chooseGuidance = createChooseGuidance(
+    document.querySelector('#choose-guidance'),
+    information,
+);
 
 // the song-library remembers the entry screen
 // the learning screen always goes back to Home
@@ -70,6 +75,7 @@ function navigate(next) {
     current = next;
     homeGuidance.hidden = true;
     freeplayGuidance.close(false);
+    chooseGuidance.close(false);
     screens.forEach((screen) => {
         screen.hidden = screen.id !== next;
     });
@@ -98,6 +104,7 @@ information.addEventListener('click', () => {
         closeHomeGuidance.focus();
     }
     if (current === 'freeplay') freeplayGuidance.open();
+    if (current === 'choose') chooseGuidance.open();
 });
 closeHomeGuidance.addEventListener('click', () => {
     homeGuidance.hidden = true;

@@ -8,6 +8,7 @@ export function createLearning(screen, navigate, reportError) {
         playing = false,
         active = false,
         generation = 0;
+    let firstNoteGuidance = true;
     let melody;
     let animationFrame;
     const status = screen.querySelector('#learning-status');
@@ -23,6 +24,18 @@ export function createLearning(screen, navigate, reportError) {
     let celebration;
     screen.querySelector('#completion-songs').addEventListener('click', () => navigate('choose'));
     const keys = [...screen.querySelectorAll('.key')];
+    const firstNoteHand = document.createElement('img');
+    firstNoteHand.className = 'first-note-hand';
+    firstNoteHand.src = 'assets/icon/hand-cursor.png';
+    firstNoteHand.alt = '';
+
+    function clearFirstNoteGuidance() {
+        keys.forEach((key) => key.classList.remove('first-note-guidance'));
+        guide
+            .querySelectorAll('.falling-note.first-note-guidance')
+            .forEach((dot) => dot.classList.remove('first-note-guidance'));
+        firstNoteHand.remove();
+    }
 
     /* --------------------------------------------------------------------------
      * Build song buttons from data and reset practice when a song is selected.
@@ -48,15 +61,24 @@ export function createLearning(screen, navigate, reportError) {
     // Render the current note, progress, and completion state.
     function render() {
         const finished = position >= song.notes.length;
+        const showFirstNoteGuidance = firstNoteGuidance && position === 0 && !playing;
         keys.forEach((key, i) =>
             key.classList.toggle('expected', !finished && i === song.notes[position].key),
         );
+        clearFirstNoteGuidance();
+        if (showFirstNoteGuidance) {
+            const firstKey = keys[song.notes[0].key];
+            firstKey.classList.add('first-note-guidance');
+            firstKey.append(firstNoteHand);
+        }
         guide.replaceChildren();
         // Space circles evenly and add one quarter of a gap at phrase endings.
         let visualOffset = 0;
-        song.notes.slice(position, position + 6).forEach((note) => {
+        song.notes.slice(position, position + 6).forEach((note, visibleIndex) => {
             const dot = document.createElement('span');
-            dot.className = 'falling-note';
+            dot.className = `falling-note${
+                showFirstNoteGuidance && visibleIndex === 0 ? ' first-note-guidance' : ''
+            }`;
             dot.style.setProperty('--key-color', COLORS[note.key]);
             dot.style.left = `${(note.key + 0.5) * 12.5}%`;
             dot.style.top = `${91 - visualOffset * 22}%`;
@@ -99,6 +121,7 @@ export function createLearning(screen, navigate, reportError) {
         melody?.stop();
         melody = undefined;
         guide.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
+        clearFirstNoteGuidance();
         playing = false;
         demo.textContent = '♫';
         stopAudio();
@@ -122,6 +145,7 @@ export function createLearning(screen, navigate, reportError) {
         if (!active || token !== generation) return;
         playing = true;
         position = 0;
+        clearFirstNoteGuidance();
         demo.textContent = '■';
         // Keep demo circles mounted and move them by audio time instead of rebuilding each beat.
         guide.replaceChildren();
@@ -202,6 +226,10 @@ export function createLearning(screen, navigate, reportError) {
             if (playing || position >= song.notes.length) return;
             playNote(index);
             if (index === song.notes[position].key) {
+                if (firstNoteGuidance && position === 0) {
+                    firstNoteGuidance = false;
+                    clearFirstNoteGuidance();
+                }
                 // Catch the current note immediately; guidance animation never gates correct input.
                 keys[index].classList.remove('wrong');
                 keys[index].animate([{ filter: 'brightness(1.35)' }, { filter: 'brightness(1)' }], {

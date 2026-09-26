@@ -490,6 +490,68 @@ button * {
     transform: translateX(2.4cqw);
 }
 
+/* Choose Song guidance keeps the three choices in the same order as the library. */
+.choose-guidance-stage {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7%;
+    padding: 7% 5% 9%;
+    border: 0.2vw solid #e8e1d5;
+    border-radius: clamp(14px, 1.8vw, 24px);
+    background: #faf8f2;
+}
+
+.choose-guidance-card {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border: 0.38cqw solid #c8c8c5;
+    border-radius: clamp(9px, 1.1vw, 15px);
+    background: white;
+    box-shadow: 0.22cqw 0.28cqw 0.2cqw #0002;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.choose-guidance-card > img {
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+    opacity: 0.48;
+    transition: opacity 0.15s ease;
+}
+
+.choose-guidance-card.is-active {
+    border-color: #fc8b17;
+    box-shadow: 0 0 0 0.08cqw #fc8b17;
+}
+
+.choose-guidance-card.is-active > img {
+    opacity: 1;
+}
+
+.choose-guidance-hand {
+    position: absolute;
+    z-index: 2;
+    right: -17%;
+    bottom: -25%;
+    width: 37%;
+    display: none;
+    transform: rotate(-28deg);
+    filter: drop-shadow(0.12cqw 0.16cqw 0 #fff);
+}
+
+.choose-guidance-card.is-active .choose-guidance-hand {
+    display: block;
+}
+
+.choose-guidance-hand img {
+    display: block;
+    width: 100%;
+}
+
 /* --------------------------------------------------------------------------
  * one shared layout for song cards
  * -------------------------------------------------------------------------- */
@@ -747,6 +809,27 @@ button * {
     box-shadow: 0 0 0 0.2cqw #0002;
 }
 
+.key.first-note-guidance {
+    z-index: 2;
+    box-shadow: inset 0 0 0 0.3cqw white;
+}
+
+.first-note-hand {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: -1.55cqw;
+    width: 4.1cqw;
+    height: 4.1cqw;
+    padding: 0.42cqw;
+    border: 0.18cqw solid #fc8b17;
+    border-radius: 50%;
+    background: white;
+    object-fit: contain;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
 .key.wrong {
     animation: shake 0.22s;
 }
@@ -896,6 +979,11 @@ button * {
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--key-color);
+}
+
+.falling-note.first-note-guidance {
+    z-index: 1;
+    box-shadow: 0 0 0 0.38cqw white;
 }
 
 /* --------------------------------------------------------------------------
