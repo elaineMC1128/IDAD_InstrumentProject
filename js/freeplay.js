@@ -6,6 +6,17 @@ export function createFreeplay(screen) {
     let colors = [...COLORS];
     const keys = [...screen.querySelectorAll('.key')];
     const canvas = screen.querySelector('.music-canvas');
+    const tapHint = screen.querySelector('#freeplay-tap-hint');
+    let hasPlayed = false;
+
+    function dismissTapHint() {
+        if (hasPlayed) return;
+        hasPlayed = true;
+        tapHint.classList.add('is-dismissed');
+        tapHint.addEventListener('transitionend', () => (tapHint.hidden = true), {
+            once: true,
+        });
+    }
     // Shuffle colors without changing pitch so visual exploration preserves the note mapping.
     screen.querySelector('#change-colors').addEventListener('click', () => {
         const previous = [...colors];
@@ -32,6 +43,11 @@ export function createFreeplay(screen) {
         enter() {},
         leave() {
             canvas.replaceChildren();
+        },
+
+        // The hint responds to the physical gesture instead of waiting for audio initialization.
+        beginPress() {
+            dismissTapHint();
         },
 
         // Match visual notes to the current key color to connect each sound with its key.

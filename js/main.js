@@ -1,6 +1,7 @@
 // Application initialization, navigation, mute state, and shared input dispatch.
 import { NOTES, COLORS, initAudio, setMuted, stopAudio, playClick } from './audio.js';
 import { createFreeplay } from './freeplay.js';
+import { createFreeplayGuidance } from './freeplay-guidance.js';
 import { createLearning } from './learning.js';
 
 /* --------------------------------------------------------------------------
@@ -49,6 +50,11 @@ const modes = {
     freeplay: createFreeplay(document.querySelector('#freeplay')),
     learning: createLearning(document.querySelector('#learning'), navigate, reportError),
 };
+const freeplayGuidance = createFreeplayGuidance(
+    document.querySelector('#freeplay-guidance'),
+    information,
+    reportError,
+);
 
 // the song-library remembers the entry screen
 // the learning screen always goes back to Home
@@ -63,6 +69,7 @@ function navigate(next) {
     document.querySelectorAll('.key.active').forEach((key) => key.classList.remove('active'));
     current = next;
     homeGuidance.hidden = true;
+    freeplayGuidance.close(false);
     screens.forEach((screen) => {
         screen.hidden = screen.id !== next;
     });
@@ -86,9 +93,11 @@ back.addEventListener('click', () =>
 );
 
 information.addEventListener('click', () => {
-    if (current !== 'home') return;
-    homeGuidance.hidden = false;
-    closeHomeGuidance.focus();
+    if (current === 'home') {
+        homeGuidance.hidden = false;
+        closeHomeGuidance.focus();
+    }
+    if (current === 'freeplay') freeplayGuidance.open();
 });
 closeHomeGuidance.addEventListener('click', () => {
     homeGuidance.hidden = true;
@@ -113,6 +122,8 @@ async function press(button) {
     const version = navigationVersion;
     const mode = modes[current];
     if (!mode) return;
+    // I acknowledge the gesture immediately, even if the audio engine still needs a moment to load.
+    mode.beginPress?.();
     button.classList.add('active');
     try {
         await initAudio();
@@ -175,7 +186,11 @@ document.addEventListener('keyup', (event) => {
 // Click feedback is only for non-piano buttons; all piano inputs play instrument audio only.
 document.addEventListener('click', (event) => {
     const button = event.target.closest('button');
-    if (button && !button.classList.contains('key')) playClick();
+    if (!button) return;
+    if (!button.classList.contains('key')) playClick();
+    // Do not retain pointer focus: a later shortcut press would reveal the browser's blue ring.
+    // Keyboard activation has detail 0, so Tab users keep a visible focus indicator.
+    if (event.detail > 0) button.blur();
 });
 
 // Both switches control labels only, preserve keyboard input, and share state across modes.

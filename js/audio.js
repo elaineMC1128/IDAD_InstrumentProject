@@ -54,9 +54,8 @@ export async function initAudio() {
                             },
                         }).toDestination(),
                     };
-                    Object.values(instruments).forEach((synth) => {
-                        synth.volume.value = -12;
-                    });
+                    instruments.piano.volume.value = -12;
+                    instruments.xylophone.volume.value = -6;
                 }
                 Tone.Destination.mute = muted;
             })

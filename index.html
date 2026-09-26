@@ -52,16 +52,13 @@
     <div
             id="home-guidance"
             class="guidance-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="home-guidance-title"
             hidden
     >
         <div class="guidance-dialog">
             <div class="guidance-header">
                 <h2 id="home-guidance-title">Choose a Mode</h2>
-                <button id="close-home-guidance" class="guidance-close" aria-label="Close guidance">
-                    <img src="assets/icon/close.png" alt=""/>
+                <button id="close-home-guidance" class="guidance-close">
+                    <img src="assets/icon/close.png" alt="close-button"/>
                 </button>
             </div>
             <div class="guidance-modes">
@@ -89,6 +86,30 @@
                             alt="Learning mode preview"
                     />
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Free Play uses one stage for five short demonstrations so the dialog stays visually stable. -->
+    <div
+            id="freeplay-guidance"
+            class="guidance-overlay"
+            hidden
+    >
+        <div class="guidance-dialog freeplay-guidance-dialog">
+            <div class="guidance-header">
+                <h2 id="freeplay-guidance-title">Try a Key</h2>
+                <button id="close-freeplay-guidance" class="guidance-close">
+                    <img src="assets/icon/close.png" alt="close-button"/>
+                </button>
+            </div>
+            <div id="freeplay-guidance-stage" class="freeplay-guidance-stage"></div>
+            <div id="freeplay-guidance-progress" class="guidance-progress">
+                <button></button>
+                <button></button>
+                <button></button>
+                <button></button>
+                <button></button>
             </div>
         </div>
     </div>
@@ -140,6 +161,15 @@
                 </div>
             </div>
             <div id="free-canvas" class="music-canvas"></div>
+            <!-- I keep this first-action cue close to the keys so it reads without covering the canvas. -->
+            <div id="freeplay-tap-hint" class="tap-hint">
+                <span class="tap-hint-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9.5 11.5V5.2a1.7 1.7 0 0 1 3.4 0v5.3-3.3a1.7 1.7 0 0 1 3.4 0v3.7-2.5a1.7 1.7 0 0 1 3.4 0v4.1-1.7a1.7 1.7 0 0 1 3.4 0v3.7c0 4.7-3 7.5-7.2 7.5h-1.3c-2.8 0-4.4-1.1-6.1-3.1l-3.2-3.7a1.8 1.8 0 0 1 2.6-2.5l1.6 1.3Z"/>
+                    </svg>
+                </span>
+                <span>Tap</span>
+            </div>
             <div class="keyboard"></div>
         </div>
     </section>
