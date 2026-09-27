@@ -490,6 +490,261 @@ button * {
     transform: translateX(2.4cqw);
 }
 
+/* Learning guidance uses four supplied illustrations, one animation, and two setting previews. */
+.learning-guidance-dialog {
+    width: min(61vw, 100svh, 820px);
+}
+
+.learning-guidance-stage {
+    position: relative;
+    height: min(27.5vw, 45svh, 370px);
+    min-height: 210px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 0.2vw solid #e8e1d5;
+    border-radius: clamp(14px, 1.8vw, 24px);
+    background: #faf8f2;
+}
+
+.learning-guidance-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.learning-song-demo {
+    position: relative;
+    width: 94%;
+    height: 90%;
+}
+
+.learning-demo-lanes {
+    position: absolute;
+    top: 2%;
+    bottom: 27%;
+    left: 5%;
+    width: 82%;
+    overflow: hidden;
+    border-right: 0.18cqw solid #c4c4c1;
+    background: repeating-linear-gradient(
+        to right,
+        #c4c4c1 0 0.18cqw,
+        transparent 0.18cqw 12.5%
+    );
+}
+
+.learning-demo-note {
+    position: absolute;
+    top: -18%;
+    left: var(--note-left);
+    width: 7.5%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--note-color);
+    box-shadow: 0.18cqw 0.2cqw 0 #0003;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+.learning-demo-lanes.is-running .learning-demo-note {
+    animation: learning-guidance-note-fall 0.85s linear var(--note-delay) forwards;
+}
+
+.learning-demo-keys {
+    position: absolute;
+    left: 5%;
+    bottom: 3%;
+    width: 82%;
+    height: 24%;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.35cqw;
+}
+
+.learning-demo-key {
+    position: relative;
+    display: grid;
+    place-items: center;
+    border: 0.32cqw solid #898987;
+    border-radius: 0 0 0.8cqw 0.8cqw;
+    background: var(--key-color);
+    color: white;
+    font: 700 1.6cqw/1 sans-serif;
+    transition:
+        transform 0.12s ease,
+        filter 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+.learning-demo-key.is-playing {
+    z-index: 2;
+    transform: translateY(0.35cqw) scale(1.05);
+    filter: brightness(1.2);
+    box-shadow: 0 0 0 0.22cqw #ffb12c;
+}
+
+.learning-demo-wave {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.25cqw);
+    height: 1.7cqw;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.22cqw;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+.learning-demo-wave i {
+    width: 0.18cqw;
+    height: 55%;
+    border-radius: 1cqw;
+    background: #ff9c22;
+}
+
+.learning-demo-wave i:nth-child(2) {
+    height: 100%;
+}
+
+.learning-demo-key.is-playing .learning-demo-wave {
+    opacity: 1;
+}
+
+.learning-demo-key.is-playing .learning-demo-wave i {
+    animation: learning-guidance-wave 0.24s ease-in-out infinite alternate;
+}
+
+.learning-demo-wave i:nth-child(2) {
+    animation-delay: 0.08s !important;
+}
+
+.learning-demo-wave i:nth-child(3) {
+    animation-delay: 0.16s !important;
+}
+
+.learning-demo-play {
+    position: absolute;
+    right: 0.8%;
+    bottom: 4%;
+    width: 4.2cqw;
+    height: 4.2cqw;
+    border: 0.2cqw solid #fc8b17;
+    border-radius: 50%;
+    background: #ffe0ad;
+    font: 700 2.4cqw/1 sans-serif;
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.learning-demo-play.is-pressed {
+    background: #ffb12c;
+    transform: scale(1.12);
+    box-shadow: 0 0 0 0.28cqw #ffd27c;
+}
+
+.learning-demo-hand {
+    position: absolute;
+    z-index: 3;
+    right: -0.2%;
+    bottom: -2%;
+    width: 4.5cqw;
+    opacity: 1;
+    pointer-events: none;
+    transform: rotate(-25deg);
+    transform-origin: center;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.learning-demo-hand.is-clicking {
+    transform: translate(-0.55cqw, -0.65cqw) rotate(-25deg) scale(0.92);
+}
+
+.learning-demo-hand.is-hidden {
+    opacity: 0;
+}
+
+.learning-setting-demo {
+    width: 94%;
+    display: grid;
+    grid-template-columns: 19cqw auto 19cqw;
+    grid-template-rows: auto 13cqw;
+    justify-content: center;
+    align-items: center;
+    gap: 2.2cqw 3cqw;
+}
+
+.learning-setting-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4cqw;
+}
+
+.learning-setting-control:first-child {
+    grid-column: 1;
+}
+
+.learning-setting-control.is-enabled {
+    grid-column: 3;
+}
+
+.learning-setting-control img {
+    width: 4.8cqw;
+    height: 4.8cqw;
+    object-fit: contain;
+}
+
+.learning-setting-card {
+    width: 19cqw;
+    height: 13cqw;
+}
+
+.learning-setting-card.is-before {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.learning-setting-demo .guidance-arrow {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.learning-setting-card.is-after {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+@keyframes learning-guidance-note-fall {
+    0% {
+        top: -18%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: 88%;
+        opacity: 0;
+    }
+}
+
+@keyframes learning-guidance-wave {
+    from {
+        transform: scaleY(0.55);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}
+
 /* Choose Song guidance keeps the three choices in the same order as the library. */
 .choose-guidance-stage {
     display: grid;
@@ -818,7 +1073,7 @@ button * {
     position: absolute;
     z-index: 3;
     left: 50%;
-    bottom: -1.55cqw;
+    bottom: -2.4cqw;
     width: 4.1cqw;
     height: 4.1cqw;
     padding: 0.42cqw;
