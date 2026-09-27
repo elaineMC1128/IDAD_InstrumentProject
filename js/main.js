@@ -152,6 +152,16 @@ document.addEventListener('keyup', (event) => {
         .forEach((button) => button.classList.remove('active'));
 });
 
+// Interrupted keyboard or touch input should never leave a key visually held.
+function releaseAllInputs() {
+    held.clear();
+    document.querySelectorAll('.key.active').forEach((button) => button.classList.remove('active'));
+}
+window.addEventListener('blur', releaseAllInputs);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) releaseAllInputs();
+});
+
 // Click feedback is only for non-piano buttons; all piano inputs play instrument audio only.
 document.addEventListener('click', (event) => {
     const button = event.target.closest('button');
