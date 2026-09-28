@@ -60,15 +60,33 @@ export function createFreeplay(screen) {
     function drawGuide() {
         const centreX = displayWidth / 2;
         const centreY = displayHeight / 2;
+        const ringSpacing = smallDimension * 0.18;
+        const canvasRadius = Math.hypot(centreX, centreY);
         context.save();
         context.strokeStyle = 'rgb(105 105 102 / 7%)';
         context.lineWidth = 1;
-        for (const ratio of [0.18, 0.3, 0.42]) {
+        for (let radius = ringSpacing; radius <= canvasRadius + ringSpacing; radius += ringSpacing) {
             context.beginPath();
-            context.arc(centreX, centreY, smallDimension * ratio, 0, Math.PI * 2);
+            context.arc(centreX, centreY, radius, 0, Math.PI * 2);
             context.stroke();
         }
         context.restore();
+    }
+
+    // Direction-aware limits use the wider horizontal space while retaining a safe vertical margin.
+    function getSafeBranchLength(angle, endpointRadius) {
+        const edgeMargin = 10;
+        const horizontalRoom = displayWidth / 2 - endpointRadius - edgeMargin;
+        const verticalRoom = displayHeight / 2 - endpointRadius - edgeMargin;
+        const horizontalLimit =
+            Math.abs(Math.cos(angle)) > 0.001
+                ? horizontalRoom / Math.abs(Math.cos(angle))
+                : Infinity;
+        const verticalLimit =
+            Math.abs(Math.sin(angle)) > 0.001
+                ? verticalRoom / Math.abs(Math.sin(angle))
+                : Infinity;
+        return Math.max(0, Math.min(horizontalLimit, verticalLimit));
     }
 
     function drawHub() {
@@ -175,21 +193,20 @@ export function createFreeplay(screen) {
     function startRadialFeedback(index) {
         if (activeBranches.has(index) || !smallDimension) return;
         const endpointRadius = randomBetween(9, 21);
-        const safeRadius = smallDimension / 2 - endpointRadius - 8;
-        const maximumLength = Math.min(
-            randomBetween(smallDimension * 0.35, smallDimension * 0.43),
-            safeRadius,
-        );
+        const angle = chooseBranchAngle();
+        const reachRatio = randomBetween(0.92, 0.98);
+        const maximumLength = getSafeBranchLength(angle, endpointRadius) * reachRatio;
         // Reduced motion shows a short static branch while held and removes it on release.
         const branch = {
             index,
             color: colors[index],
-            angle: chooseBranchAngle(),
+            angle,
             currentLength: reducedMotion.matches
                 ? Math.min(48, maximumLength)
                 : randomBetween(24, 38),
             maximumLength,
-            growthSpeed: randomBetween(90, 180),
+            reachRatio,
+            growthSpeed: randomBetween(120, 210),
             retractSpeed: randomBetween(180, 300),
             endpointRadius,
             lineWidth: randomBetween(4, 9),
@@ -228,11 +245,14 @@ export function createFreeplay(screen) {
         const bounds = panel.getBoundingClientRect();
         if (!bounds.width || !bounds.height) return;
         const nextSmallDimension = Math.min(bounds.width, bounds.height);
+        const branchProgress = new Map();
         if (smallDimension) {
             const scale = nextSmallDimension / smallDimension;
             allBranches().forEach((branch) => {
-                branch.currentLength *= scale;
-                branch.maximumLength *= scale;
+                branchProgress.set(
+                    branch,
+                    branch.maximumLength ? branch.currentLength / branch.maximumLength : 0,
+                );
                 branch.growthSpeed *= scale;
                 branch.retractSpeed *= scale;
                 branch.endpointRadius *= scale;
@@ -242,6 +262,16 @@ export function createFreeplay(screen) {
         displayWidth = bounds.width;
         displayHeight = bounds.height;
         smallDimension = nextSmallDimension;
+        allBranches().forEach((branch) => {
+            branch.maximumLength =
+                getSafeBranchLength(branch.angle, branch.endpointRadius) * branch.reachRatio;
+            if (branchProgress.has(branch)) {
+                branch.currentLength = Math.min(
+                    branch.maximumLength,
+                    branch.maximumLength * branchProgress.get(branch),
+                );
+            }
+        });
         const pixelRatio = window.devicePixelRatio || 1;
         radialCanvas.width = Math.round(displayWidth * pixelRatio);
         radialCanvas.height = Math.round(displayHeight * pixelRatio);
