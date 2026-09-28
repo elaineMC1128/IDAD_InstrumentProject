@@ -465,6 +465,27 @@ button * {
     box-shadow: 0 0 0 0.2cqw #0002;
 }
 
+.key.first-note-guidance {
+    z-index: 2;
+    box-shadow: inset 0 0 0 0.3cqw white;
+}
+
+.first-note-hand {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: -2.4cqw;
+    width: 4.1cqw;
+    height: 4.1cqw;
+    padding: 0.42cqw;
+    border: 0.18cqw solid #fc8b17;
+    border-radius: 50%;
+    background: white;
+    object-fit: contain;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
 .key.wrong {
     animation: shake 0.22s;
 }
@@ -473,6 +494,52 @@ button * {
     position: absolute;
     font-size: 6cqw;
     animation: float-note 1.5s ease-out forwards;
+}
+
+.tap-hint {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: 20%;
+    width: 15.5cqw;
+    height: 5.8cqw;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2cqw;
+    border: 0.25cqw solid #aaa;
+    border-radius: 2.1cqw;
+    background: white;
+    box-shadow: 0 0.35cqw 0.8cqw #0002;
+    color: #4d4d4d;
+    font: 700 2.2cqw/1 sans-serif;
+    opacity: 0.66;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.tap-hint-icon {
+    width: 4cqw;
+    height: 4cqw;
+    display: grid;
+    place-items: center;
+    border: 0.2cqw solid #aaa;
+    border-radius: 50%;
+}
+
+.tap-hint-icon svg {
+    width: 65%;
+    height: 65%;
+    fill: white;
+    stroke: #555;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.tap-hint.is-dismissed {
+    opacity: 0;
 }
 
 .both-labels .shortcut-label {
@@ -567,6 +634,11 @@ button * {
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--key-color);
+}
+
+.falling-note.first-note-guidance {
+    z-index: 1;
+    box-shadow: 0 0 0 0.38cqw white;
 }
 
 /* --------------------------------------------------------------------------

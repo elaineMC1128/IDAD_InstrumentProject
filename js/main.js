@@ -92,6 +92,7 @@ async function press(button) {
     const version = navigationVersion;
     const mode = modes[current];
     if (!mode) return;
+    mode.beginPress?.();
     button.classList.add('active');
     try {
         await initAudio();
