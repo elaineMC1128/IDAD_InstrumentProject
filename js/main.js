@@ -17,6 +17,11 @@ let current = 'welcome',
 let songLibraryOrigin = 'home';
 const held = new Set();
 
+function releaseAllInputs() {
+    held.clear();
+    document.querySelectorAll('.key.active').forEach((key) => key.classList.remove('active'));
+}
+
 // A message is displayed when audio loading fails, allowing users to still browse the interface.
 export function reportError(error) {
     const message = document.querySelector('#audio-status');
@@ -56,8 +61,7 @@ function navigate(next) {
     navigationVersion++;
     modes[current]?.leave();
     stopAudio();
-    held.clear();
-    document.querySelectorAll('.key.active').forEach((key) => key.classList.remove('active'));
+    releaseAllInputs();
     current = next;
     screens.forEach((screen) => {
         screen.hidden = screen.id !== next;
@@ -149,6 +153,12 @@ document.addEventListener('keyup', (event) => {
     document
         .querySelectorAll(`[data-key="${index}"]`)
         .forEach((button) => button.classList.remove('active'));
+});
+
+// Blur and visibility cleanup prevent pointer or keyboard input from leaving a key pressed.
+window.addEventListener('blur', releaseAllInputs);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) releaseAllInputs();
 });
 
 // Click feedback is only for non-piano buttons; all piano inputs play instrument audio only.
