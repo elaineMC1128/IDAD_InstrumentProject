@@ -26,12 +26,6 @@ button {
     touch-action: manipulation;
 }
 
-/* I use the interface's own pressed states, so the browser focus ring is unnecessary here. */
-button:focus,
-button:focus-visible {
-    outline: none;
-}
-
 button:hover {
     filter: brightness(1.04);
 }

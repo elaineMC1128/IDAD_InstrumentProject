@@ -15,10 +15,10 @@ let current = 'welcome',
     muted = false,
     navigationVersion = 0;
 let songLibraryOrigin = 'home';
-const held = new Set();
+const activeSources = new Map();
 
 // A message is displayed when audio loading fails, allowing users to still browse the interface.
-export function reportError(error) {
+function reportError(error) {
     const message = document.querySelector('#audio-status');
     message.textContent = error.message;
     message.hidden = false;
@@ -54,10 +54,9 @@ function navigate(next) {
     if (next === 'choose' && current !== 'choose')
         songLibraryOrigin = current === 'learning' ? 'learning' : 'home';
     navigationVersion++;
+    releaseAllInputs();
     modes[current]?.leave();
     stopAudio();
-    held.clear();
-    document.querySelectorAll('.key.active').forEach((key) => key.classList.remove('active'));
     current = next;
     screens.forEach((screen) => {
         screen.hidden = screen.id !== next;
@@ -88,11 +87,10 @@ volume.addEventListener('click', () => {
 });
 
 // After audio initialization, verify that navigation has not invalidated this input.
-async function press(button) {
+async function play(button) {
     const version = navigationVersion;
     const mode = modes[current];
     if (!mode) return;
-    button.classList.add('active');
     try {
         await initAudio();
         if (version === navigationVersion) {
@@ -104,21 +102,58 @@ async function press(button) {
     }
 }
 
+function activateInput(button, source) {
+    let sources = activeSources.get(button);
+    if (!sources) {
+        sources = new Set();
+        activeSources.set(button, sources);
+    }
+    if (sources.has(source)) return;
+    const isNewPress = sources.size === 0;
+    sources.add(source);
+    if (!isNewPress) return;
+    button.classList.add('active');
+    // I start the visual response before audio initialization so the instrument always feels immediate.
+    modes[current]?.activate?.(Number(button.dataset.key));
+    play(button);
+}
+
+function releaseInput(button, source) {
+    const sources = activeSources.get(button);
+    if (!sources?.delete(source)) return;
+    if (sources.size) return;
+    // A key stays active until every finger or keyboard source holding it has been released.
+    activeSources.delete(button);
+    button.classList.remove('active');
+    modes[current]?.release?.(Number(button.dataset.key));
+}
+
+function releaseAllInputs() {
+    activeSources.forEach((_, button) => {
+        button.classList.remove('active');
+        modes[current]?.release?.(Number(button.dataset.key));
+    });
+    activeSources.clear();
+}
+
 // Bind "press, release, cancel" interaction logic to all keys (.key).
 document.querySelectorAll('.key').forEach((button) => {
     button.addEventListener('pointerdown', (event) => {
         if (event.button !== 0) return;
         event.preventDefault();
         button.setPointerCapture(event.pointerId);
-        press(button);
+        activateInput(button, `pointer-${event.pointerId}`);
     });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((event) =>
-        button.addEventListener(event, () => button.classList.remove('active')),
+        button.addEventListener(event, (pointerEvent) =>
+            releaseInput(button, `pointer-${pointerEvent.pointerId}`),
+        ),
     );
     button.addEventListener('click', (event) => {
         if (event.detail === 0) {
-            press(button);
-            setTimeout(() => button.classList.remove('active'), 150);
+            const source = `virtual-${Date.now()}`;
+            activateInput(button, source);
+            setTimeout(() => releaseInput(button, source), 180);
         }
     });
 });
@@ -133,22 +168,30 @@ document.addEventListener('keydown', (event) => {
         event.metaKey ||
         event.ctrlKey ||
         event.altKey ||
-        held.has(letter)
+        activeSources.get(document.querySelector(`#${current} [data-key="${index}"]`))?.has(
+            `keyboard-${letter}`,
+        )
     )
         return;
     const button = document.querySelector(`#${current} [data-key="${index}"]`);
     if (button) {
         event.preventDefault();
-        held.add(letter);
-        press(button);
+        activateInput(button, `keyboard-${letter}`);
     }
 });
 document.addEventListener('keyup', (event) => {
-    held.delete(event.key.toLowerCase());
-    const index = shortcuts.indexOf(event.key.toLowerCase());
+    const letter = event.key.toLowerCase();
+    const index = shortcuts.indexOf(letter);
+    if (index < 0) return;
     document
         .querySelectorAll(`[data-key="${index}"]`)
-        .forEach((button) => button.classList.remove('active'));
+        .forEach((button) => releaseInput(button, `keyboard-${letter}`));
+});
+
+// Browser/app switching and interrupted touches must never leave a key held.
+window.addEventListener('blur', releaseAllInputs);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) releaseAllInputs();
 });
 
 // Click feedback is only for non-piano buttons; all piano inputs play instrument audio only.
