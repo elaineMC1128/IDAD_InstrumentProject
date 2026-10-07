@@ -9,6 +9,12 @@ import { createLearning } from './learning.js';
 const screens = [...document.querySelectorAll('.screen')];
 const back = document.querySelector('#nav-back');
 const volume = document.querySelector('#volume');
+const homeScreen = document.querySelector('#home');
+const homeModeButtons = [...homeScreen.querySelectorAll('.mode-button')];
+const chooseScreen = document.querySelector('#choose');
+const chooseGuidance = chooseScreen.querySelector('.choose-guidance');
+const chooseGuidanceProgress = chooseGuidance.querySelector('.learning-guide-progress');
+const chooseGuidanceSkip = chooseGuidance.querySelector('.learning-guide-skip');
 const shortcuts = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'];
 const parents = { home: 'welcome', freeplay: 'home', choose: 'home', learning: 'home' };
 let current = 'welcome',
@@ -47,6 +53,237 @@ const modes = {
     learning: createLearning(document.querySelector('#learning'), navigate, reportError),
 };
 
+let homeIntroTimer;
+let homePulseStartTimer;
+let homePulseTimer;
+let homePulseStep = 0;
+let homeGuidanceHasPlayed = false;
+
+const freeplayScreen = document.querySelector('#freeplay');
+const freeplayOnboarding = freeplayScreen.querySelector('.freeplay-onboarding');
+const freeplayOnboardingTitle = freeplayOnboarding.querySelector('.freeplay-step-title');
+const freeplayOnboardingProgress = freeplayOnboarding.querySelector('.freeplay-progress');
+const freeplayOnboardingSkip = freeplayOnboarding.querySelector('.freeplay-skip');
+const freeplayOnboardingCharacter = freeplayOnboarding.querySelector('.freeplay-guide-character');
+const freeplayOnboardingSteps = [
+    { id: 'key', title: '1. Try a key', character: 'character-3.png' },
+    { id: 'voice', title: '2. Change Sound', character: 'character-4.png' },
+    { id: 'colors', title: '3. Shuffle Colours', character: 'character-4.png' },
+    { id: 'keyboard', title: '4. Show Keyboard', character: 'character-5.png' },
+    { id: 'notes', title: '5. Show Note Names', character: 'character-5.png' },
+];
+let freeplayOnboardingHasPlayed = false;
+let freeplayOnboardingStep = -1;
+let freeplayOnboardingActive = false;
+let freeplayOnboardingCheckTimer;
+let freeplayOnboardingFadeTimer;
+let freeplayOnboardingCompleteTimer;
+let chooseGuidanceHasPlayed = false;
+
+function clearHomeGuidanceTimers() {
+    clearTimeout(homeIntroTimer);
+    clearTimeout(homePulseStartTimer);
+    clearTimeout(homePulseTimer);
+    homeIntroTimer = undefined;
+    homePulseStartTimer = undefined;
+    homePulseTimer = undefined;
+    homePulseStep = 0;
+}
+
+function setHomePulseTarget(target) {
+    homeScreen.classList.toggle('is-pointing-play', target === 'play');
+    homeScreen.classList.toggle('is-pointing-learn', target === 'learn');
+}
+
+function startHomePulse() {
+    clearTimeout(homePulseTimer);
+    const sequence = ['play', 'learn', 'play', 'learn'];
+    homePulseStep = 0;
+
+    const showNextTarget = () => {
+        if (homePulseStep >= sequence.length) {
+            homeScreen.classList.remove('is-pointing-play', 'is-pointing-learn');
+            homePulseTimer = undefined;
+            return;
+        }
+        setHomePulseTarget(sequence[homePulseStep]);
+        homePulseStep++;
+        homePulseTimer = setTimeout(showNextTarget, 1200);
+    };
+
+    showNextTarget();
+}
+
+function showHomeChoices() {
+    clearHomeGuidanceTimers();
+    homeScreen.classList.remove('is-guidance-intro');
+    homeScreen.classList.add('is-guidance-active');
+    homeScreen.classList.remove(
+        'is-pointing-play',
+        'is-pointing-learn',
+        'is-locked-play',
+        'is-locked-learn',
+    );
+    homePulseStartTimer = setTimeout(startHomePulse, 1000);
+}
+
+function stopHomeGuidance() {
+    clearHomeGuidanceTimers();
+    homeScreen.classList.remove(
+        'is-guidance-intro',
+        'is-guidance-active',
+        'is-pointing-play',
+        'is-pointing-learn',
+        'is-locked-play',
+        'is-locked-learn',
+    );
+}
+
+function startHomeGuidance() {
+    if (homeGuidanceHasPlayed) {
+        stopHomeGuidance();
+        return;
+    }
+    homeGuidanceHasPlayed = true;
+    clearHomeGuidanceTimers();
+    homeScreen.classList.add('is-guidance-intro');
+    homeIntroTimer = setTimeout(showHomeChoices, 2000);
+}
+
+function lockHomeGuidanceOnButton(button) {
+    if (!homeScreen.classList.contains('is-guidance-active')) return;
+    clearHomeGuidanceTimers();
+    const target = button.dataset.screen === 'freeplay' ? 'play' : 'learn';
+    homeScreen.classList.remove(
+        'is-pointing-play',
+        'is-pointing-learn',
+        'is-locked-play',
+        'is-locked-learn',
+    );
+    homeScreen.classList.add(`is-locked-${target}`);
+}
+
+homeScreen.addEventListener(
+    'click',
+    (event) => {
+        if (!homeScreen.classList.contains('is-guidance-intro')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.target.closest('.guide-skip')) {
+            stopHomeGuidance();
+            return;
+        }
+        showHomeChoices();
+    },
+    true,
+);
+
+homeModeButtons.forEach((button) => {
+    button.addEventListener('pointerenter', () => lockHomeGuidanceOnButton(button));
+    button.addEventListener('focusin', () => lockHomeGuidanceOnButton(button));
+});
+
+function renderFreeplayOnboardingStep() {
+    const step = freeplayOnboardingSteps[freeplayOnboardingStep];
+    if (!step) return;
+    freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
+    freeplayOnboarding.dataset.step = step.id;
+    freeplayOnboardingTitle.textContent = step.title;
+    freeplayOnboardingCharacter.src = `assets/character/${step.character}`;
+    freeplayOnboardingProgress.replaceChildren(
+        ...freeplayOnboardingSteps.map((_, index) => {
+            const dot = document.createElement('span');
+            if (index < freeplayOnboardingStep) dot.classList.add('is-done');
+            return dot;
+        }),
+    );
+}
+
+function renderFreeplayOnboardingComplete() {
+    const finalStep = freeplayOnboardingSteps.at(-1);
+    freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
+    freeplayOnboarding.dataset.step = 'complete';
+    freeplayOnboardingTitle.textContent = finalStep.title;
+    freeplayOnboardingCharacter.src = `assets/character/${finalStep.character}`;
+    freeplayOnboardingProgress.replaceChildren(
+        ...freeplayOnboardingSteps.map(() => {
+            const dot = document.createElement('span');
+            dot.className = 'is-done';
+            return dot;
+        }),
+    );
+    freeplayOnboardingCheckTimer = setTimeout(() => {
+        const complete = document.createElement('span');
+        complete.className = 'is-complete';
+        freeplayOnboardingProgress.append(complete);
+    }, 500);
+    freeplayOnboardingFadeTimer = setTimeout(() => {
+        freeplayOnboarding.classList.add('is-progress-fading', 'is-complete-card-visible');
+        freeplayOnboardingCompleteTimer = setTimeout(stopFreeplayOnboarding, 2500);
+    }, 1000);
+}
+
+function startFreeplayOnboarding() {
+    if (freeplayOnboardingHasPlayed) return;
+    freeplayOnboardingHasPlayed = true;
+    freeplayOnboardingActive = true;
+    freeplayOnboardingStep = 0;
+    freeplayOnboarding.hidden = false;
+    renderFreeplayOnboardingStep();
+}
+
+function stopFreeplayOnboarding() {
+    clearTimeout(freeplayOnboardingCheckTimer);
+    clearTimeout(freeplayOnboardingFadeTimer);
+    clearTimeout(freeplayOnboardingCompleteTimer);
+    freeplayOnboardingCheckTimer = undefined;
+    freeplayOnboardingFadeTimer = undefined;
+    freeplayOnboardingCompleteTimer = undefined;
+    freeplayOnboardingActive = false;
+    freeplayOnboardingStep = -1;
+    freeplayOnboarding.hidden = true;
+    freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
+    delete freeplayOnboarding.dataset.step;
+}
+
+function advanceFreeplayOnboarding(expectedStep) {
+    if (!freeplayOnboardingActive) return;
+    if (freeplayOnboardingSteps[freeplayOnboardingStep]?.id !== expectedStep) return;
+    freeplayOnboardingStep++;
+    if (freeplayOnboardingStep >= freeplayOnboardingSteps.length) {
+        freeplayOnboardingActive = false;
+        renderFreeplayOnboardingComplete();
+        return;
+    }
+    renderFreeplayOnboardingStep();
+}
+
+freeplayOnboardingSkip.addEventListener('click', stopFreeplayOnboarding);
+
+function renderChooseGuidanceProgress() {
+    chooseGuidanceProgress.replaceChildren(
+        ...Array.from({ length: 5 }, () => document.createElement('span')),
+    );
+}
+
+function startChooseGuidance() {
+    if (chooseGuidanceHasPlayed) return;
+    chooseGuidanceHasPlayed = true;
+    chooseScreen.classList.add('is-learning-song-guidance');
+    chooseGuidance.hidden = false;
+    renderChooseGuidanceProgress();
+}
+
+function stopChooseGuidance() {
+    chooseScreen.classList.remove('is-learning-song-guidance');
+    chooseGuidance.hidden = true;
+}
+
+chooseGuidanceSkip.addEventListener('click', stopChooseGuidance);
+document.querySelector('#song-options').addEventListener('click', (event) => {
+    if (!chooseGuidance.hidden && event.target.closest('.song-card')) stopChooseGuidance();
+});
+
 // the song-library remembers the entry screen
 // the learning screen always goes back to Home
 function navigate(next) {
@@ -54,6 +291,9 @@ function navigate(next) {
     if (next === 'choose' && current !== 'choose')
         songLibraryOrigin = current === 'learning' ? 'learning' : 'home';
     navigationVersion++;
+    if (current === 'home') stopHomeGuidance();
+    if (current === 'freeplay') stopFreeplayOnboarding();
+    if (current === 'choose') stopChooseGuidance();
     releaseAllInputs();
     modes[current]?.leave();
     stopAudio();
@@ -66,6 +306,9 @@ function navigate(next) {
     document.querySelectorAll('.label-settings').forEach((panel) => {
         panel.hidden = panel.dataset.mode !== next;
     });
+    if (next === 'home') startHomeGuidance();
+    if (next === 'freeplay') startFreeplayOnboarding();
+    if (next === 'choose') startChooseGuidance();
     modes[next]?.enter();
 }
 document.querySelectorAll('[data-screen]').forEach((button) =>
@@ -85,6 +328,15 @@ volume.addEventListener('click', () => {
     setMuted(muted);
     volume.querySelector('img').src = `assets/icon/volume-${muted ? 'off' : 'on'}.png`;
 });
+
+freeplayScreen
+    .querySelector('#change-colors')
+    .addEventListener('click', () => advanceFreeplayOnboarding('colors'));
+freeplayScreen
+    .querySelectorAll('[data-voice]')
+    .forEach((button) =>
+        button.addEventListener('click', () => advanceFreeplayOnboarding('voice')),
+    );
 
 // After audio initialization, verify that navigation has not invalidated this input.
 async function play(button) {
@@ -142,6 +394,7 @@ document.querySelectorAll('.key').forEach((button) => {
         if (event.button !== 0) return;
         event.preventDefault();
         button.setPointerCapture(event.pointerId);
+        if (button.closest('#freeplay')) advanceFreeplayOnboarding('key');
         activateInput(button, `pointer-${event.pointerId}`);
     });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((event) =>
@@ -176,6 +429,7 @@ document.addEventListener('keydown', (event) => {
     const button = document.querySelector(`#${current} [data-key="${index}"]`);
     if (button) {
         event.preventDefault();
+        if (button.closest('#freeplay')) advanceFreeplayOnboarding('key');
         activateInput(button, `keyboard-${letter}`);
     }
 });
@@ -217,6 +471,9 @@ document.querySelectorAll('.performance').forEach((screen) => {
         toggle.classList.toggle('is-on', labelSettings[type]);
         toggle.addEventListener('click', () => {
             labelSettings[type] = !labelSettings[type];
+            if (screen.id === 'freeplay') {
+                advanceFreeplayOnboarding(type === 'keyboard' ? 'keyboard' : 'notes');
+            }
             document.querySelectorAll(`[data-label-type="${type}"]`).forEach((button) => {
                 button.classList.toggle('is-on', labelSettings[type]);
             });
