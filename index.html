@@ -43,12 +43,29 @@
                 <img src="assets/icon/learning-mode-icon.png" alt="learning mode"/>
             </button>
         </div>
+        <div class="home-guide home-guide-intro">
+            <div class="speech-bubble speech-welcome">Welcome</div>
+            <img class="guide-character guide-character-intro" src="assets/character/character-1.png" alt="" />
+            <button class="guide-skip" type="button">Skip</button>
+        </div>
+        <div class="home-guide home-guide-choice">
+            <div class="speech-bubble speech-choice">choose one<br />to try!</div>
+            <img class="guide-character guide-character-choice" src="assets/character/character-2.png" alt="" />
+        </div>
+        <img class="guide-hand" src="assets/icon/hand-cursor.png" alt="" />
     </section>
 
     <!-- Song library -->
     <section id="choose" class="screen choose" hidden>
         <img class="choice-icon" src="assets/icon/choice.png" alt="song-options"/>
         <div id="song-options" class="song-options"></div>
+        <div class="choose-guidance" hidden>
+            <div class="learning-guide-title">1. Choose a song</div>
+            <div class="learning-guide-progress" aria-hidden="true"></div>
+            <button class="learning-guide-skip" type="button">× Skip</button>
+            <img class="learning-guide-character choose-guide-character" src="assets/character/character-7.png" alt="" />
+            <img class="learning-guide-hand choose-guide-hand" src="assets/icon/hand-cursor.png" alt="" />
+        </div>
     </section>
 
     <!-- Free play -->
@@ -93,6 +110,26 @@
             </div>
             <div id="free-canvas" class="music-canvas"></div>
             <div class="keyboard"></div>
+        </div>
+        <div class="freeplay-onboarding" hidden>
+            <div class="freeplay-step-title"></div>
+            <div class="freeplay-progress" aria-hidden="true"></div>
+            <button class="freeplay-skip" type="button">× Skip</button>
+            <div class="freeplay-highlight"></div>
+            <div class="freeplay-key-hint">
+                <img src="assets/icon/keyboard-example.png" alt="" />
+                <span class="freeplay-key-hint-frame"></span>
+            </div>
+            <img class="freeplay-guide-character" src="assets/character/character-3.png" alt="" />
+            <img class="freeplay-guide-hand" src="assets/icon/hand-cursor.png" alt="" />
+            <div class="freeplay-complete-card">
+                <div class="freeplay-complete-image">
+                    <img src="assets/character/character-6.png" alt="" />
+                </div>
+                <div class="freeplay-complete-content">
+                    <span class="freeplay-complete-text">Try Playing!</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -143,6 +180,26 @@
                 </div>
             </div>
             <div class="keyboard"></div>
+        </div>
+        <div class="learning-onboarding" hidden>
+            <div class="learning-guide-title"></div>
+            <div class="learning-guide-progress" aria-hidden="true"></div>
+            <button class="learning-guide-skip" type="button">× Skip</button>
+            <img class="learning-guide-character performance-guide-character" src="assets/character/character-7.png" alt="" />
+            <img class="learning-guide-hand performance-guide-hand" src="assets/icon/hand-cursor.png" alt="" />
+            <div class="learning-guide-key-frame"></div>
+            <div class="learning-library-target">
+                <button type="button"><img src="assets/icon/star.png" alt="" /></button>
+                <button type="button"><img src="assets/icon/clap.png" alt="" /></button>
+                <button type="button"><img src="assets/icon/happy.png" alt="" /></button>
+                <button class="learning-library-confirm" type="button" aria-label="Complete music library guide">
+                    <img src="assets/icon/complete.png" alt="" />
+                </button>
+            </div>
+            <div class="learning-complete-card">
+                <img src="assets/character/character-10.png" alt="" />
+                <span>Try Playing!</span>
+            </div>
         </div>
     </section>
     <p id="audio-status" class="audio-status" hidden></p>
