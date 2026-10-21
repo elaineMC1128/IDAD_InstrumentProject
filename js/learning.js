@@ -35,11 +35,11 @@ export function createLearning(screen, navigate, reportError) {
     let onboardingColumnTimer;
     let onboardingCompleteTimer;
     const onboardingSteps = [
-        { id: 'choose', title: '1. Choose a song', character: 'character-7.png' },
-        { id: 'watch', title: '2. Watch the Note', character: 'character-9.png' },
-        { id: 'press', title: '3. Press the Key', character: 'character-9.png' },
-        { id: 'hear', title: '4. Hear the Song', character: 'character-9.png' },
-        { id: 'library', title: '5. Music Library', character: 'character-7.png' },
+        { id: 'choose', title: '1. Choose a song', character: 'character-3.png' },
+        { id: 'watch', title: '2. Watch the Note', character: 'character-5.png' },
+        { id: 'press', title: '3. Press the Key', character: 'character-5.png' },
+        { id: 'hear', title: '4. Hear the Song', character: 'character-5.png' },
+        { id: 'library', title: '5. Music Library', character: 'character-3.png' },
     ];
     screen.querySelector('#completion-songs').addEventListener('click', () => navigate('choose'));
     const keys = [...screen.querySelectorAll('.key')];

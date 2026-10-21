@@ -66,11 +66,11 @@ const freeplayOnboardingProgress = freeplayOnboarding.querySelector('.freeplay-p
 const freeplayOnboardingSkip = freeplayOnboarding.querySelector('.freeplay-skip');
 const freeplayOnboardingCharacter = freeplayOnboarding.querySelector('.freeplay-guide-character');
 const freeplayOnboardingSteps = [
-    { id: 'key', title: '1. Try a key', character: 'character-3.png' },
-    { id: 'voice', title: '2. Change Sound', character: 'character-4.png' },
-    { id: 'colors', title: '3. Shuffle Colours', character: 'character-4.png' },
-    { id: 'keyboard', title: '4. Show Keyboard', character: 'character-5.png' },
-    { id: 'notes', title: '5. Show Note Names', character: 'character-5.png' },
+    { id: 'key', title: '1. Try a key', character: 'character-2.png' },
+    { id: 'voice', title: '2. Change Sound', character: 'character-3.png' },
+    { id: 'colors', title: '3. Shuffle Colours', character: 'character-3.png' },
+    { id: 'keyboard', title: '4. Show Keyboard', character: 'character-4.png' },
+    { id: 'notes', title: '5. Show Note Names', character: 'character-4.png' },
 ];
 let freeplayOnboardingHasPlayed = false;
 let freeplayOnboardingStep = -1;
