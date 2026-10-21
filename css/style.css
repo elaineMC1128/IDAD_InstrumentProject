@@ -1558,39 +1558,14 @@ button * {
     top: 21%;
 }
 
-.freeplay-onboarding[data-step="keyboard"] .freeplay-highlight,
-.freeplay-onboarding[data-step="notes"] .freeplay-highlight {
-    right: -8%;
-    width: 12.6%;
-    height: 8.5%;
-}
-
-.freeplay-onboarding[data-step="keyboard"] .freeplay-highlight {
-    bottom: 14.5%;
-}
-
-.freeplay-onboarding[data-step="notes"] .freeplay-highlight {
-    bottom: 5.8%;
-}
-
 .freeplay-onboarding[data-step="keyboard"] .freeplay-guide-character,
 .freeplay-onboarding[data-step="notes"] .freeplay-guide-character {
-    right: -9%;
-    top: 52%;
+    transform: none;
 }
 
-.freeplay-onboarding[data-step="keyboard"] .freeplay-guide-hand,
-.freeplay-onboarding[data-step="notes"] .freeplay-guide-hand {
-    width: 3.4%;
-    right: -5.5%;
-}
-
-.freeplay-onboarding[data-step="keyboard"] .freeplay-guide-hand {
-    bottom: 12%;
-}
-
-.freeplay-onboarding[data-step="notes"] .freeplay-guide-hand {
-    bottom: 2.6%;
+.freeplay-guide-hand.is-toggle-guidance {
+    z-index: 20;
+    transform: rotate(-35deg);
 }
 
 @keyframes onboarding-blink {

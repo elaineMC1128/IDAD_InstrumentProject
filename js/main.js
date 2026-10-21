@@ -65,6 +65,7 @@ const freeplayOnboardingTitle = freeplayOnboarding.querySelector('.freeplay-step
 const freeplayOnboardingProgress = freeplayOnboarding.querySelector('.freeplay-progress');
 const freeplayOnboardingSkip = freeplayOnboarding.querySelector('.freeplay-skip');
 const freeplayOnboardingCharacter = freeplayOnboarding.querySelector('.freeplay-guide-character');
+const freeplayOnboardingHand = freeplayOnboarding.querySelector('.freeplay-guide-hand');
 const freeplayOnboardingSteps = [
     { id: 'key', title: '1. Try a key', character: 'character-2.png' },
     { id: 'voice', title: '2. Change Sound', character: 'character-3.png' },
@@ -72,6 +73,7 @@ const freeplayOnboardingSteps = [
     { id: 'keyboard', title: '4. Show Keyboard', character: 'character-4.png' },
     { id: 'notes', title: '5. Show Note Names', character: 'character-4.png' },
 ];
+const freeplayToggleGuidanceTargets = { keyboard: 'keyboard', notes: 'note' };
 let freeplayOnboardingHasPlayed = false;
 let freeplayOnboardingStep = -1;
 let freeplayOnboardingActive = false;
@@ -183,6 +185,69 @@ homeModeButtons.forEach((button) => {
     button.addEventListener('focusin', () => lockHomeGuidanceOnButton(button));
 });
 
+function positionFreeplayToggleGuidance() {
+    const step = freeplayOnboardingSteps[freeplayOnboardingStep];
+    const labelType = freeplayToggleGuidanceTargets[step?.id];
+    const highlight = freeplayOnboarding.querySelector('.freeplay-highlight');
+    if (!freeplayOnboardingActive || !labelType) {
+        if (freeplayOnboardingHand.parentElement !== freeplayOnboarding) {
+            freeplayOnboarding.append(freeplayOnboardingHand);
+        }
+        freeplayOnboardingHand.classList.remove('is-toggle-guidance');
+        highlight.removeAttribute('style');
+        freeplayOnboardingCharacter.removeAttribute('style');
+        freeplayOnboardingHand.removeAttribute('style');
+        return;
+    }
+
+    const toggle = document.querySelector(
+        `.label-settings[data-mode="freeplay"] [data-label-type="${labelType}"]`,
+    );
+    const keyboardToggle = document.querySelector(
+        '.label-settings[data-mode="freeplay"] [data-label-type="keyboard"]',
+    );
+    if (!toggle || !keyboardToggle) return;
+
+    const app = document.querySelector('.app');
+    const screenRect = freeplayScreen.getBoundingClientRect();
+    const appRect = app.getBoundingClientRect();
+    const targetRect = toggle.getBoundingClientRect();
+    const keyboardRect = keyboardToggle.getBoundingClientRect();
+    const horizontalPadding = screenRect.width * 0.01;
+    const verticalPadding = screenRect.width * 0.006;
+    // Keep the character above both stacked switches; center it on the active switch.
+    const characterWidth = Math.min(360, Math.max(95, targetRect.width * 1.3));
+    const characterHeight = characterWidth * (1302 / 1208);
+    const characterLeft = targetRect.left - screenRect.left
+        + (targetRect.width - characterWidth) / 2;
+    const characterTop = Math.min(targetRect.top, keyboardRect.top)
+        - screenRect.top - characterHeight - keyboardRect.height * 0.45;
+    const handWidth = Math.max(28, targetRect.height * 0.9);
+
+    Object.assign(highlight.style, {
+        left: `${targetRect.left - screenRect.left - horizontalPadding}px`,
+        top: `${targetRect.top - screenRect.top - verticalPadding}px`,
+        width: `${targetRect.width + horizontalPadding * 2}px`,
+        height: `${targetRect.height + verticalPadding * 2}px`,
+    });
+    Object.assign(freeplayOnboardingCharacter.style, { 
+        left: `${characterLeft}px`,
+        top: `${characterTop}px`,
+        width: `${characterWidth}px`,
+    });
+    if (freeplayOnboardingHand.parentElement !== app) {
+        app.append(freeplayOnboardingHand);
+    }
+    freeplayOnboardingHand.classList.add('is-toggle-guidance');
+    Object.assign(freeplayOnboardingHand.style, {
+        left: `${targetRect.right - appRect.left - handWidth * 0.95}px`,
+        top: `${targetRect.bottom - appRect.top - handWidth * 0.4}px`,
+        width: `${handWidth}px`,
+    });
+}
+
+window.addEventListener('resize', positionFreeplayToggleGuidance);
+
 function renderFreeplayOnboardingStep() {
     const step = freeplayOnboardingSteps[freeplayOnboardingStep];
     if (!step) return;
@@ -190,6 +255,7 @@ function renderFreeplayOnboardingStep() {
     freeplayOnboarding.dataset.step = step.id;
     freeplayOnboardingTitle.textContent = step.title;
     freeplayOnboardingCharacter.src = `assets/character/${step.character}`;
+    positionFreeplayToggleGuidance();
     freeplayOnboardingProgress.replaceChildren(
         ...freeplayOnboardingSteps.map((_, index) => {
             const dot = document.createElement('span');
@@ -201,6 +267,7 @@ function renderFreeplayOnboardingStep() {
 
 function renderFreeplayOnboardingComplete() {
     const finalStep = freeplayOnboardingSteps.at(-1);
+    positionFreeplayToggleGuidance();
     freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
     freeplayOnboarding.dataset.step = 'complete';
     freeplayOnboardingTitle.textContent = finalStep.title;
@@ -241,6 +308,7 @@ function stopFreeplayOnboarding() {
     freeplayOnboardingCompleteTimer = undefined;
     freeplayOnboardingActive = false;
     freeplayOnboardingStep = -1;
+    positionFreeplayToggleGuidance();
     freeplayOnboarding.hidden = true;
     freeplayOnboarding.classList.remove('is-progress-fading', 'is-complete-card-visible');
     delete freeplayOnboarding.dataset.step;
