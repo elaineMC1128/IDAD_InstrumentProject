@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 870" fill="none">
+  <!-- The artwork stays at the edges so controls and music content remain clear. -->
+
+  <circle cx="-24" cy="240" r="158" fill="#CDEBF3" opacity=".86"/>
+  <circle cx="1370" cy="245" r="135" fill="#E4DAF3" opacity=".84"/>
+  <circle cx="-15" cy="892" r="192" fill="#D4E9C4" opacity=".88"/>
+  <circle cx="1356" cy="888" r="151" fill="#FAD8B3" opacity=".86"/>
+
+  <g fill="#F9CE38">
+    <path d="m110 139 2.3 10.7L123 152l-10.7 2.3L110 165l-2.3-10.7L97 152l10.7-2.3z"/>
+    <path d="m650 115 2.5 12 12 2.5-12 2.5-2.5 12-2.5-12-12-2.5 12-2.5z"/>
+    <path d="m155 573 2.8 13.2L171 589l-13.2 2.8L155 605l-2.8-13.2L139 589l13.2-2.8z"/>
+    <path d="m1190 151 2.2 10.8 10.8 2.2-10.8 2.2-2.2 10.8-2.2-10.8-10.8-2.2 10.8-2.2z"/>
+  </g>
+  <g fill="#6A48A1">
+    <path d="m1265 611 2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/>
+    <circle cx="248" cy="127" r="5"/>
+  </g>
+  <g fill="#61BBDC">
+    <path d="m1242 274 2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/>
+    <circle cx="1056" cy="119" r="5"/>
+  </g>
+  <g fill="#E5A6C7">
+    <path d="m127 212 1.4 6.6 6.6 1.4-6.6 1.4-1.4 6.6-1.4-6.6-6.6-1.4 6.6-1.4z"/>
+    <path d="m1216 565 1.4 6.6 6.6 1.4-6.6 1.4-1.4 6.6-1.4-6.6-6.6-1.4 6.6-1.4z"/>
+  </g>
+
+  <g fill="#9ACCE7" stroke="#9ACCE7" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".95">
+    <path d="M130 313v-29l23-7v29" fill="none"/>
+    <ellipse cx="121" cy="318" rx="10" ry="7" transform="rotate(-20 121 318)" stroke="none"/>
+    <ellipse cx="144" cy="311" rx="10" ry="7" transform="rotate(-20 144 311)" stroke="none"/>
+  </g>
+  <g fill="#E5A6C7" stroke="#E5A6C7" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+    <path d="M1244 345v-29l23-7v29" fill="none"/>
+    <ellipse cx="1235" cy="350" rx="10" ry="7" transform="rotate(-20 1235 350)" stroke="none"/>
+    <ellipse cx="1258" cy="343" rx="10" ry="7" transform="rotate(-20 1258 343)" stroke="none"/>
+  </g>
+
+  <g transform="translate(74 806)">
+    <circle cy="-12" r="9" fill="#B5DDBD"/>
+    <circle cx="12" r="9" fill="#B5DDBD"/><circle cx="6" cy="-6" r="5" fill="#F8CB44"/>
+  </g>
+  <g transform="translate(1267 808)">
+    <circle cy="-12" r="9" fill="#E8A9CA"/><circle cx="12" r="9" fill="#E8A9CA"/>
+    <circle cx="6" cy="-6" r="5" fill="#F8CB44"/>
+  </g>
+</svg>

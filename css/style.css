@@ -44,6 +44,21 @@ button:hover {
     container-type: inline-size;
 }
 
+/* Show edge decorations only on the welcome and home screens. */
+.app:has(.welcome:not([hidden]))::before,
+.app:has(.home:not([hidden]))::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("../assets/background/playground-decor.svg") center / 100% 100% no-repeat;
+    pointer-events: none;
+    animation: background-float 24s ease-in-out infinite alternate;
+}
+
+.app:has(.welcome:not([hidden]))::before {
+    background-image: url("../assets/background/welcome-decor.svg");
+}
+
 .screen {
     position: absolute;
     width: min(100%, 154svh);
@@ -736,6 +751,16 @@ button * {
 /* --------------------------------------------------------------------------
  * animations and small-screen adjustments
  * -------------------------------------------------------------------------- */
+/* A small, slow drift keeps the artwork behind the controls. */
+@keyframes background-float {
+    from {
+        transform: translate3d(-0.6%, 0.4%, 0) scale(1.025);
+    }
+    to {
+        transform: translate3d(0.6%, -0.4%, 0) scale(1.025);
+    }
+}
+
 @keyframes shake {
     25% {
         transform: translateX(-0.5cqw);
@@ -763,6 +788,10 @@ button * {
     *::after {
         animation-duration: 0.01ms !important;
         transition: none !important;
+    }
+
+    .app::before {
+        animation: none !important;
     }
 
     .light-bar-rise {
